@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход или регистрация - BUBLDINGS STORE</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .auth-page {
+            padding: 40px 0;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 100px;
+            left: 20px;
+        }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background-color: #f8f8f8;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .back-link:hover {
+            background-color: #F2DD00;
+            border-color: #F2DD00;
+            transform: translateX(-5px);
+        }
+
+        .auth-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
+            width: 100%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .auth-title {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 30px;
+            color: #000;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 30px;
+            background: #f8f8f8;
+            border-radius: 15px;
+            padding: 5px;
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 12px;
+            text-align: center;
+            background: none;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #666;
+        }
+
+        .auth-tab.active {
+            background: #F2DD00;
+            color: #000;
+            box-shadow: 0 2px 10px rgba(242, 221, 0, 0.3);
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-label .required {
+            color: #ff4444;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #F2DD00;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(242, 221, 0, 0.1);
+        }
+
+        .password-input {
+            position: relative;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            font-size: 14px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .remember-me input {
+            width: 16px;
+            height: 16px;
+        }
+
+        .forgot-password {
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .forgot-password:hover {
+            color: #000;
+        }
+
+        .auth-button {
+            width: 100%;
+            background: #F2DD00;
+            border: 2px solid #000;
+            border-radius: 50px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+
+        .auth-button:hover {
+            background: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        .auth-footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 25px;
+        }
+
+        .auth-footer a {
+            color: #000;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            background-color: #ff4444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .auth-container {
+                padding: 30px 25px;
+                margin: 20px;
+            }
+
+            .back-button {
+                position: relative;
+                top: auto;
+                left: auto;
+                margin-bottom: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .auth-container {
+                padding: 25px 20px;
+            }
+
+            .auth-title {
+                font-size: 24px;
+            }
+
+            .form-options {
+                flex-direction: column;
+                gap: 15px;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Поиск по сайту">
+                    <button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item">
+                        <a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;">
+                            <i class="fas fa-phone-alt"></i>
+                            <span class="action-text">Контакты</span>
+                        </a>
+                    </div>
+                    <div class="action-item">
+                        <a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;">
+                            <i class="fas fa-heart"></i>
+                            <span class="action-text">Избранное</span>
+                        </a>
+                    </div>
+                    <div class="action-item">
+                        <a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;">
+                            <i class="fas fa-shopping-cart"></i>
+                            <span class="action-text">Корзина</span>
+                        </a>
+                    </div>
+                    <div class="action-item">
+                        <a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"
+                            id="profile-link">
+                            <i class="fas fa-user"></i>
+                            <span class="action-text" id="user-status-text">Войти</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container auth-page">
+        <div class="back-button">
+            <a href="index.html" class="back-link">
+                <i class="fas fa-arrow-left"></i>
+                На главную
+            </a>
+        </div>
+
+        <div class="auth-container">
+            <h1 class="auth-title">Вход или регистрация</h1>
+
+            <div id="error-message" class="error-message"></div>
+            <div id="success-message" class="success-message"></div>
+
+            <div class="auth-tabs">
+                <button class="auth-tab active" data-tab="login">Вход</button>
+                <button class="auth-tab" data-tab="register">Регистрация</button>
+            </div>
+
+            <!-- Login Form -->
+            <form class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <label class="form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="login-email" placeholder="example@mail.ru" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароль <span class="required">*</span></label>
+                    <div class="password-input">
+                        <input type="password" class="form-input" id="login-password" placeholder="Введите пароль"
+                            required>
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" id="remember-me">
+                        Запомнить меня
+                    </label>
+                    <a href="#" class="forgot-password" id="forgot-password">Забыли пароль?</a>
+                </div>
+
+                <button type="submit" class="auth-button">Войти</button>
+
+                <div class="auth-footer">
+                    Нет аккаунта? <a href="#" class="switch-to-register">Зарегистрироваться</a>
+                </div>
+            </form>
+
+            <!-- Register Form -->
+            <form class="auth-form" id="register-form">
+                <div class="form-group">
+                    <label class="form-label">Имя <span class="required">*</span></label>
+                    <input type="text" class="form-input" id="reg-name" placeholder="Иван" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Телефон <span class="required">*</span></label>
+                    <input type="tel" class="form-input" id="reg-phone" placeholder="+7 (___) ___-__-__" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Email <span class="required">*</span></label>
+                    <input type="email" class="form-input" id="reg-email" placeholder="example@mail.ru" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Пароль <span class="required">*</span></label>
+                    <div class="password-input">
+                        <input type="password" class="form-input" id="reg-password" placeholder="Придумайте пароль"
+                            required>
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Повторите пароль <span class="required">*</span></label>
+                    <div class="password-input">
+                        <input type="password" class="form-input" id="reg-password-confirm"
+                            placeholder="Повторите пароль" required>
+                        <button type="button" class="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="submit" class="auth-button">Зарегистрироваться</button>
+
+                <div class="auth-footer">
+                    Уже есть аккаунт? <a href="#" class="switch-to-login">Войти</a>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            phone: '+7 (111) 111-11-11',
+            email: 'admin1@gmail.com',
+            password: 'админ1234',
+            isAdmin: true
+        };
+
+        // Функции для работы с пользователями
+        function getUsers() {
+            const users = localStorage.getItem('users');
+            return users ? JSON.parse(users) : [];
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem('users', JSON.stringify(users));
+        }
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function setCurrentUser(user) {
+            localStorage.setItem('currentUser', JSON.stringify(user));
+        }
+
+        function updateUserStatusInHeader() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            const profileLink = document.getElementById('profile-link');
+
+            if (userStatusText) {
+                if (currentUser) {
+                    userStatusText.textContent = currentUser.name || 'Профиль';
+                    if (profileLink) {
+                        profileLink.href = 'profile.html';
+                    }
+                } else {
+                    userStatusText.textContent = 'Войти';
+                    if (profileLink) {
+                        profileLink.href = 'auth.html';
+                    }
+                }
+            }
+        }
+
+        function formatPhone(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('7') || value.startsWith('8')) {
+                value = value.substring(1);
+            }
+            let formatted = '+7 (';
+            if (value.length > 0) formatted += value.substring(0, 3);
+            if (value.length >= 4) formatted += ') ' + value.substring(3, 6);
+            if (value.length >= 7) formatted += '-' + value.substring(6, 8);
+            if (value.length >= 9) formatted += '-' + value.substring(8, 10);
+            e.target.value = formatted;
+        }
+
+        function showMessage(message, type) {
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+
+            if (type === 'error') {
+                errorDiv.textContent = message;
+                errorDiv.classList.add('show');
+                setTimeout(() => {
+                    errorDiv.classList.remove('show');
+                }, 3000);
+            } else {
+                successDiv.textContent = message;
+                successDiv.classList.add('show');
+                setTimeout(() => {
+                    successDiv.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function validatePhone(phone) {
+            const digits = phone.replace(/\D/g, '');
+            return digits.length === 11;
+        }
+
+        // Регистрация пользователя
+        function registerUser(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('reg-name').value.trim();
+            const phone = document.getElementById('reg-phone').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const passwordConfirm = document.getElementById('reg-password-confirm').value;
+
+            if (!name) {
+                showMessage('Пожалуйста, введите ваше имя', 'error');
+                return;
+            }
+
+            if (!validatePhone(phone)) {
+                showMessage('Пожалуйста, введите корректный номер телефона (11 цифр)', 'error');
+                return;
+            }
+
+            if (!validateEmail(email)) {
+                showMessage('Пожалуйста, введите корректный email', 'error');
+                return;
+            }
+
+            if (password.length < 4) {
+                showMessage('Пароль должен содержать минимум 4 символа', 'error');
+                return;
+            }
+
+            if (password !== passwordConfirm) {
+                showMessage('Пароли не совпадают', 'error');
+                return;
+            }
+
+            const users = getUsers();
+            const existingUser = users.find(u => u.email === email);
+
+            if (existingUser) {
+                showMessage('Пользователь с таким email уже существует', 'error');
+                return;
+            }
+
+            const now = new Date();
+            const newUser = {
+                id: Date.now().toString(),
+                name: name,
+                phone: phone,
+                email: email,
+                password: password,
+                createdAt: now.toISOString(),
+                createdAtFormatted: now.toLocaleDateString('ru-RU', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric'
+                }),
+                orders: [],
+                cardData: null
+            };
+
+            users.push(newUser);
+            saveUsers(users);
+
+            setCurrentUser({
+                id: newUser.id,
+                name: newUser.name,
+                email: newUser.email,
+                phone: newUser.phone,
+                createdAt: newUser.createdAt
+            });
+
+            updateUserStatusInHeader();
+            showMessage('Регистрация прошла успешно! Добро пожаловать!', 'success');
+
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 1500);
+        }
+
+        // Вход пользователя
+        function loginUser(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+            const rememberMe = document.getElementById('remember-me').checked;
+
+            if (!validateEmail(email)) {
+                showMessage('Пожалуйста, введите корректный email', 'error');
+                return;
+            }
+
+            if (!password) {
+                showMessage('Пожалуйста, введите пароль', 'error');
+                return;
+            }
+
+            // Проверка на администратора
+            if (email === MASTER_ADMIN.email && password === MASTER_ADMIN.password) {
+                const now = new Date();
+                const adminUser = {
+                    id: MASTER_ADMIN.id,
+                    name: MASTER_ADMIN.name,
+                    email: MASTER_ADMIN.email,
+                    phone: MASTER_ADMIN.phone,
+                    isAdmin: true,
+                    createdAt: now.toISOString(),
+                    createdAtFormatted: now.toLocaleDateString('ru-RU', {
+                        day: 'numeric',
+                        month: 'long',
+                        year: 'numeric'
+                    })
+                };
+
+                setCurrentUser(adminUser);
+
+                let users = getUsers();
+                const existingIndex = users.findIndex(u => u.email === MASTER_ADMIN.email);
+
+                if (existingIndex !== -1) {
+                    if (!users[existingIndex].createdAt) {
+                        users[existingIndex].createdAt = adminUser.createdAt;
+                        users[existingIndex].createdAtFormatted = adminUser.createdAtFormatted;
+                    }
+                    users[existingIndex] = { ...users[existingIndex], ...adminUser, password: MASTER_ADMIN.password };
+                } else {
+                    users.push({ ...adminUser, password: MASTER_ADMIN.password, orders: [] });
+                }
+
+                saveUsers(users);
+
+                if (rememberMe) {
+                    localStorage.setItem('rememberedUser', JSON.stringify({ email: email }));
+                } else {
+                    localStorage.removeItem('rememberedUser');
+                }
+
+                updateUserStatusInHeader();
+                showMessage(`Добро пожаловать, ${MASTER_ADMIN.name}!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1000);
+                return;
+            }
+
+            // Обычный пользователь
+            const users = getUsers();
+            const user = users.find(u => u.email === email && u.password === password);
+
+            if (user) {
+                setCurrentUser({
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    phone: user.phone,
+                    createdAt: user.createdAt
+                });
+
+                if (rememberMe) {
+                    localStorage.setItem('rememberedUser', JSON.stringify({ email: email }));
+                } else {
+                    localStorage.removeItem('rememberedUser');
+                }
+
+                updateUserStatusInHeader();
+                showMessage(`Добро пожаловать, ${user.name}!`, 'success');
+
+                setTimeout(() => {
+                    window.location.href = 'profile.html';
+                }, 1000);
+            } else {
+                showMessage('Неверный email или пароль', 'error');
+            }
+        }
+
+        // Восстановление пароля
+        function resetPassword() {
+            const email = prompt('Введите ваш email для восстановления пароля:');
+            if (!email) return;
+
+            if (!validateEmail(email)) {
+                showMessage('Пожалуйста, введите корректный email', 'error');
+                return;
+            }
+
+            const users = getUsers();
+            const user = users.find(u => u.email === email);
+
+            if (user) {
+                const newPassword = prompt('Введите новый пароль (минимум 4 символа):');
+                if (newPassword && newPassword.length >= 4) {
+                    user.password = newPassword;
+                    saveUsers(users);
+                    showMessage('Пароль успешно изменен! Теперь вы можете войти.', 'success');
+                } else if (newPassword) {
+                    showMessage('Пароль должен содержать минимум 4 символа', 'error');
+                }
+            } else {
+                showMessage('Пользователь с таким email не найден', 'error');
+            }
+        }
+
+        function loadRememberedUser() {
+            const remembered = localStorage.getItem('rememberedUser');
+            if (remembered) {
+                const { email } = JSON.parse(remembered);
+                const loginEmail = document.getElementById('login-email');
+                if (loginEmail) {
+                    loginEmail.value = email;
+                }
+                const rememberCheckbox = document.getElementById('remember-me');
+                if (rememberCheckbox) {
+                    rememberCheckbox.checked = true;
+                }
+            }
+        }
+
+        // Tab functionality
+        document.querySelectorAll('.auth-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.tab + '-form').classList.add('active');
+            });
+        });
+
+        document.querySelector('.switch-to-register')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.auth-tab[data-tab="register"]').click();
+        });
+
+        document.querySelector('.switch-to-login')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            document.querySelector('.auth-tab[data-tab="login"]').click();
+        });
+
+        document.querySelectorAll('.toggle-password').forEach(button => {
+            button.addEventListener('click', function () {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('i');
+
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    input.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+
+        const phoneInput = document.getElementById('reg-phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', formatPhone);
+        }
+
+        document.getElementById('forgot-password')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            resetPassword();
+        });
+
+        document.getElementById('register-form').addEventListener('submit', registerUser);
+        document.getElementById('login-form').addEventListener('submit', loginUser);
+
+        const currentUser = getCurrentUser();
+        if (currentUser && window.location.pathname.includes('auth.html')) {
+            setTimeout(() => {
+                window.location.href = 'profile.html';
+            }, 1000);
+        }
+
+        loadRememberedUser();
+        updateUserStatusInHeader();
+
+        // Функция поиска
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        sessionStorage.setItem('searchQuery', query);
+                        window.location.href = 'index.html';
+                    }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            sessionStorage.setItem('searchQuery', query);
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
+            }
+        }
+        setupSearch();
+    </script>
+</body>
+
+</html>

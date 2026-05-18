@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>Юридическая информация - BUBLDINGS STORE</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .legal-page {
+            padding: 40px 0;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 30px;
+            padding: 50px 40px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #F2DD00;
+            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .legal-content {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .legal-section {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .legal-section:hover {
+            border-color: #F2DD00;
+            box-shadow: 0 10px 30px rgba(242, 221, 0, 0.1);
+        }
+
+        .legal-section h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F2DD00;
+        }
+
+        .legal-section h2 i {
+            color: #F2DD00;
+            font-size: 24px;
+        }
+
+        .legal-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin: 20px 0 10px;
+        }
+
+        .legal-section p {
+            color: #555;
+            line-height: 1.7;
+            margin-bottom: 15px;
+        }
+
+        .legal-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .legal-section ul li {
+            padding-left: 25px;
+            position: relative;
+            margin-bottom: 10px;
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .legal-section ul li:before {
+            content: "•";
+            color: #F2DD00;
+            font-size: 18px;
+            position: absolute;
+            left: 5px;
+        }
+
+        .company-details {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .company-details p {
+            margin-bottom: 8px;
+        }
+
+        .company-details strong {
+            color: #000;
+        }
+
+        .last-updated {
+            text-align: center;
+            color: #999;
+            font-size: 13px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e0e0e0;
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            .hero-section h1 {
+                font-size: 28px;
+            }
+
+            .legal-section {
+                padding: 20px;
+            }
+
+            .legal-section h2 {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container"><input type="text" class="search-input" id="search-input"
+                        placeholder="Поиск по сайту"><button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span><span
+                                class="wishlist-counter" style="display: none;"></span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span><span
+                                class="cart-counter" style="display: none;"></span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container legal-page">
+        <div class="hero-section">
+            <h1>Юридическая информация</h1>
+            <p>Правовая информация о деятельности интернет-магазина BUBLDINGS STORE</p>
+        </div>
+        <div class="legal-content">
+            <div class="legal-section">
+                <h2><i class="fas fa-building"></i> Реквизиты компании</h2>
+                <div class="company-details">
+                    <p><strong>Полное наименование:</strong> ООО "БАБЛДИНГС СТОР"</p>
+                    <p><strong>Юридический адрес:</strong> 123456, г. Москва, ул. Строителей, д. 25, офис 101</p>
+                    <p><strong>ИНН/КПП:</strong> 7712345678 / 771201001</p>
+                    <p><strong>ОГРН:</strong> 1207700123456</p>
+                    <p><strong>Расчетный счет:</strong> 40702810123456789012</p>
+                    <p><strong>Банк:</strong> ПАО "Сбербанк России", г. Москва</p>
+                    <p><strong>БИК:</strong> 044525225</p>
+                    <p><strong>Корр. счет:</strong> 30101810400000000225</p>
+                    <p><strong>Генеральный директор:</strong> Иванов Иван Иванович</p>
+                </div>
+            </div>
+            <div class="legal-section">
+                <h2><i class="fas fa-file-contract"></i> Публичная оферта</h2>
+                <p>Настоящий документ является официальной публичной офертой интернет-магазина BUBLDINGS STORE (далее —
+                    «Продавец») и содержит все существенные условия предоставления услуг и продажи товаров.</p>
+                <p>Оформляя заказ на сайте, вы соглашаетесь с условиями настоящей оферты. Продавец оставляет за собой
+                    право вносить изменения в оферту без предварительного уведомления.</p>
+            </div>
+            <div class="legal-section">
+                <h2><i class="fas fa-lock"></i> Политика конфиденциальности</h2>
+                <p>Мы уважаем право каждого клиента на конфиденциальность и обязуемся защищать предоставленную
+                    информацию.</p>
+                <h3>Какие данные мы собираем:</h3>
+                <ul>
+                    <li>Имя, контактный телефон и email для обработки заказа</li>
+                    <li>Адрес доставки для выполнения обязательств по договору</li>
+                    <li>Историю заказов для улучшения сервиса</li>
+                </ul>
+                <h3>Как мы используем данные:</h3>
+                <ul>
+                    <li>Для обработки и доставки заказов</li>
+                    <li>Для информирования о статусе заказа</li>
+                    <li>Для улучшения качества обслуживания</li>
+                </ul>
+                <p>Мы не передаем ваши персональные данные третьим лицам, за исключением случаев, предусмотренных
+                    законодательством РФ.</p>
+            </div>
+            <div class="legal-section">
+                <h2><i class="fas fa-exchange-alt"></i> Условия возврата и обмена</h2>
+                <p>Покупатель имеет право вернуть товар надлежащего качества в течение 14 дней с момента получения, если
+                    товар не был в употреблении, сохранены его товарный вид, потребительские свойства, пломбы, фабричные
+                    ярлыки, а также имеется документ, подтверждающий факт покупки.</p>
+                <p>Возврат товара ненадлежащего качества осуществляется в любое время в течение гарантийного срока. В
+                    случае обнаружения брака мы проводим экспертизу и заменяем товар или возвращаем деньги.</p>
+                <p>Для оформления возврата необходимо связаться с нашей службой поддержки по телефону или email.</p>
+            </div>
+            <div class="legal-section">
+                <h2><i class="fas fa-truck"></i> Условия доставки</h2>
+                <ul>
+                    <li>Доставка осуществляется по Москве, Московской области и другим регионам России</li>
+                    <li>При заказе от 5000 ₽ доставка по Москве бесплатная</li>
+                    <li>Минимальное время доставки — день в день (при заказе до 16:00)</li>
+                    <li>При доставке обязательно наличие документа, удостоверяющего личность</li>
+                    <li>Время доставки согласовывается с менеджером после оформления заказа</li>
+                </ul>
+            </div>
+            <div class="legal-section">
+                <h2><i class="fas fa-credit-card"></i> Условия оплаты</h2>
+                <ul>
+                    <li>Наличными при получении (курьеру или в магазине)</li>
+                    <li>Банковской картой на сайте (Visa, MasterCard, МИР)</li>
+                    <li>Безналичный расчет для юридических лиц (по счету)</li>
+                    <li>Оплата через СБП (Система быстрых платежей)</li>
+                </ul>
+                <p>Все платежи на сайте защищены. Мы не храним данные вашей банковской карты.</p>
+            </div>
+            <div class="last-updated"><i class="fas fa-clock"></i> Последнее обновление: 12 мая 2026 года</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = getCurrentUser();
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email && currentUser.id === MASTER_ADMIN.id) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        function updateUserStatus() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) userStatusText.textContent = currentUser.name || 'Профиль';
+                else userStatusText.textContent = 'Войти';
+            }
+        }
+
+        function updateCartCounter() {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function updateWishlistCounter() {
+            const currentUser = getCurrentUser();
+            let wishlistKey = 'wishlist_guest';
+            if (currentUser && currentUser.id) wishlistKey = `wishlist_${currentUser.id}`;
+            const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } });
+                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } } });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUserStatus();
+            updateCartCounter();
+            updateWishlistCounter();
+            setupSearch();
+            updateAdminButtonVisibility();
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>О компании - BUBLDINGS STORE</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .about-page {
+            padding: 40px 0;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 30px;
+            padding: 60px 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.05"><path fill="%23F2DD00" d="M10,10 L20,10 L15,20 Z M30,40 L40,40 L35,50 Z M60,70 L70,70 L65,80 Z M80,20 L90,20 L85,30 Z"/></svg>');
+            background-repeat: repeat;
+            pointer-events: none;
+        }
+
+        .hero-section h1 {
+            font-size: 48px;
+            font-weight: 800;
+            color: #F2DD00;
+            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+            position: relative;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 50px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: #F2DD00;
+            box-shadow: 0 10px 30px rgba(242, 221, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: 800;
+            color: #F2DD00;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .about-content {
+            max-width: 900px;
+            margin: 0 auto 50px;
+        }
+
+        .section-block {
+            background: #fff;
+            border-radius: 24px;
+            padding: 35px;
+            margin-bottom: 30px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s ease;
+        }
+
+        .section-block:hover {
+            border-color: #F2DD00;
+            box-shadow: 0 10px 30px rgba(242, 221, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .section-title i {
+            color: #F2DD00;
+            font-size: 32px;
+        }
+
+        .section-title::after {
+            content: "";
+            flex: 1;
+            height: 2px;
+            background: linear-gradient(90deg, #F2DD00, transparent);
+        }
+
+        .about-text {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #444;
+        }
+
+        .mission-text {
+            font-size: 18px;
+            line-height: 1.7;
+            color: #333;
+            font-style: italic;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 16px;
+            border-left: 4px solid #F2DD00;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .value-card {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 20px;
+            padding: 30px 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 2px solid #f0f0f0;
+        }
+
+        .value-card:hover {
+            transform: translateY(-5px);
+            border-color: #F2DD00;
+            background: #fff;
+        }
+
+        .value-icon {
+            width: 70px;
+            height: 70px;
+            background: #F2DD00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover .value-icon {
+            transform: scale(1.1);
+            background: #000;
+        }
+
+        .value-icon i {
+            font-size: 30px;
+            color: #000;
+        }
+
+        .value-card:hover .value-icon i {
+            color: #F2DD00;
+        }
+
+        .value-card h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .value-card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        .advantages-list {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .advantage-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 15px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .advantage-item:hover {
+            background: rgba(242, 221, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .advantage-item i {
+            font-size: 20px;
+            color: #4CAF50;
+        }
+
+        .advantage-item span {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .contact-cta {
+            background: linear-gradient(135deg, #F2DD00, #e6ce00);
+            border-radius: 24px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .contact-cta h3 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 15px;
+        }
+
+        .contact-cta p {
+            color: #333;
+            margin-bottom: 25px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: #fff;
+            border: 2px solid #000;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover {
+            background: #000;
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .cta-btn i {
+            font-size: 16px;
+        }
+
+        @media (max-width: 992px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            .hero-section h1 {
+                font-size: 32px;
+            }
+
+            .hero-section p {
+                font-size: 14px;
+            }
+
+            .section-title {
+                font-size: 24px;
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .advantages-list {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .stat-number {
+                font-size: 32px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .section-block {
+                padding: 25px;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+            }
+
+            .cta-btn {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Поиск по сайту">
+                    <button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span><span
+                                class="wishlist-counter" style="display: none;"></span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span><span
+                                class="cart-counter" style="display: none;"></span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container about-page">
+        <div class="hero-section">
+            <h1>О компании</h1>
+            <p>Ваш надежный партнер в мире строительства и ремонта</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">2020</div>
+                <div class="stat-label">Год основания</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">10 000+</div>
+                <div class="stat-label">Товаров в ассортименте</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">50 000+</div>
+                <div class="stat-label">Довольных клиентов</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Служба поддержки</div>
+            </div>
+        </div>
+
+        <div class="about-content">
+            <div class="section-block">
+                <h2 class="section-title"><i class="fas fa-store"></i> Кто мы</h2>
+                <div class="about-text">
+                    <p><strong>BUBLDINGS STORE</strong> — это современный магазин строительных материалов, основанный в
+                        2020 году. Мы предлагаем широкий ассортимент товаров для строительства, ремонта и обустройства
+                        дома.</p>
+                    <p style="margin-top: 15px;">Наша команда — это профессионалы, которые хорошо разбираются в
+                        строительных материалах и всегда готовы помочь вам сделать правильный выбор. Мы ценим каждого
+                        клиента и стремимся сделать процесс покупки максимально комфортным.</p>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h2 class="section-title"><i class="fas fa-bullseye"></i> Наша миссия</h2>
+                <div class="mission-text">Предоставлять клиентам качественные строительные материалы по доступным ценам,
+                    обеспечивая профессиональную консультацию и быструю доставку.</div>
+            </div>
+
+            <div class="section-block">
+                <h2 class="section-title"><i class="fas fa-gem"></i> Наши ценности</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <div class="value-icon"><i class="fas fa-medal"></i></div>
+                        <h4>Качество</h4>
+                        <p>Только проверенные товары от ведущих производителей</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon"><i class="fas fa-clock"></i></div>
+                        <h4>Быстрая доставка</h4>
+                        <p>Доставляем заказы в день оформления по Москве</p>
+                    </div>
+                    <div class="value-card">
+                        <div class="value-icon"><i class="fas fa-headset"></i></div>
+                        <h4>Поддержка 24/7</h4>
+                        <p>Поможем с выбором в любое время</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section-block">
+                <h2 class="section-title"><i class="fas fa-star"></i> Наши преимущества</h2>
+                <div class="advantages-list">
+                    <div class="advantage-item"><i class="fas fa-check-circle"></i><span>Широкий ассортимент — более 10
+                            000 товаров на складе</span></div>
+                    <div class="advantage-item"><i class="fas fa-tag"></i><span>Низкие цены — работаем напрямую с
+                            производителями</span></div>
+                    <div class="advantage-item"><i class="fas fa-chalkboard-user"></i><span>Профессиональные
+                            консультации — поможем подобрать материалы</span></div>
+                    <div class="advantage-item"><i class="fas fa-truck-fast"></i><span>Удобная доставка — по всей
+                            России</span></div>
+                    <div class="advantage-item"><i class="fas fa-shield-heart"></i><span>Гарантия качества — на все
+                            товары</span></div>
+                    <div class="advantage-item"><i class="fas fa-credit-card"></i><span>Удобные способы оплаты —
+                            наличные, карты, онлайн</span></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-cta">
+            <h3>Готовы к сотрудничеству?</h3>
+            <p>Свяжитесь с нами любым удобным способом</p>
+            <div class="cta-buttons">
+                <a href="catalog.html" class="cta-btn"><i class="fas fa-store"></i> Перейти в каталог</a>
+                <a href="contacts.html" class="cta-btn"><i class="fas fa-phone-alt"></i> Связаться с нами</a>
+                <a href="vacancies.html" class="cta-btn"><i class="fas fa-briefcase"></i> Присоединиться к команде</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = getCurrentUser();
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email && currentUser.id === MASTER_ADMIN.id) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        function updateUserStatus() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) {
+                    userStatusText.textContent = currentUser.name || 'Профиль';
+                } else {
+                    userStatusText.textContent = 'Войти';
+                }
+            }
+        }
+
+        function updateCartCounter() {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function updateWishlistCounter() {
+            const currentUser = getCurrentUser();
+            let wishlistKey = 'wishlist_guest';
+            if (currentUser && currentUser.id) wishlistKey = `wishlist_${currentUser.id}`;
+            const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateUserStatus();
+            updateCartCounter();
+            updateWishlistCounter();
+            setupSearch();
+            updateAdminButtonVisibility();
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

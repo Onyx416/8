@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>Избранное - BUBLDINGS STORE</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .wishlist-page {
+            padding: 40px 0;
+            min-height: 60vh;
+        }
+
+        .wishlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .wishlist-title {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .wishlist-title i {
+            color: #F2DD00;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .clear-wishlist,
+        .home-link {
+            background-color: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            font-size: 14px;
+            text-decoration: none;
+            color: #333;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .home-link {
+            background-color: #F2DD00;
+            border-color: #000;
+            color: #000;
+        }
+
+        .clear-wishlist:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+        }
+
+        .home-link:hover {
+            background-color: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        .wishlist-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .wishlist-item {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            background-color: #fff;
+            border-radius: 16px;
+            border: 2px solid #f0f0f0;
+            gap: 16px;
+            transition: all 0.3s;
+        }
+
+        .wishlist-item:hover {
+            border-color: #F2DD00;
+            transform: translateY(-2px);
+        }
+
+        .wishlist-item-image {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 12px;
+            flex-shrink: 0;
+        }
+
+        .wishlist-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .wishlist-item-name {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .wishlist-item-price {
+            font-size: 20px;
+            font-weight: bold;
+            color: #EDD653;
+        }
+
+        .wishlist-item-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .add-to-cart-btn,
+        .remove-btn {
+            padding: 8px 16px;
+            border-radius: 40px;
+            border: 2px solid #000;
+            background-color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            transition: all 0.3s;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .add-to-cart-btn {
+            background-color: #F2DD00;
+        }
+
+        .add-to-cart-btn:hover {
+            background-color: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        .remove-btn {
+            border-color: #e0e0e0;
+        }
+
+        .remove-btn:hover {
+            border-color: #ff4444;
+            color: #ff4444;
+            transform: translateY(-2px);
+        }
+
+        .empty-wishlist {
+            text-align: center;
+            padding: 60px 20px;
+            background: #fff;
+            border-radius: 20px;
+            border: 2px solid #f0f0f0;
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            border: 2px dashed #e0e0e0;
+        }
+
+        .empty-icon i {
+            font-size: 50px;
+            color: #F2DD00;
+        }
+
+        .empty-wishlist h2 {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 12px;
+            color: #000;
+        }
+
+        .empty-wishlist p {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+
+        .continue-shopping {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 14px 40px;
+            background: #F2DD00;
+            border: 2px solid #000;
+            border-radius: 60px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .continue-shopping i {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .continue-shopping:hover {
+            background: #e6ce00;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(242, 221, 0, 0.3);
+        }
+
+        .continue-shopping:hover i {
+            transform: translateX(-5px);
+        }
+
+        @media (max-width: 640px) {
+            .wishlist-page {
+                padding: 20px 0;
+            }
+
+            .wishlist-title {
+                font-size: 24px;
+            }
+
+            .clear-wishlist,
+            .home-link {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            .wishlist-item {
+                flex-wrap: wrap;
+                padding: 12px;
+                gap: 12px;
+            }
+
+            .wishlist-item-image {
+                width: 70px;
+                height: 70px;
+            }
+
+            .wishlist-item-name {
+                font-size: 14px;
+                white-space: normal;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+            }
+
+            .wishlist-item-price {
+                font-size: 18px;
+            }
+
+            .wishlist-item-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+
+            .add-to-cart-btn,
+            .remove-btn {
+                padding: 8px 14px;
+                font-size: 12px;
+            }
+
+            .empty-wishlist {
+                padding: 40px 20px;
+            }
+
+            .empty-icon {
+                width: 90px;
+                height: 90px;
+            }
+
+            .empty-icon i {
+                font-size: 38px;
+            }
+
+            .empty-wishlist h2 {
+                font-size: 22px;
+            }
+
+            .empty-wishlist p {
+                font-size: 14px;
+            }
+
+            .continue-shopping {
+                padding: 12px 30px;
+                font-size: 14px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .wishlist-header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .header-buttons {
+                justify-content: center;
+            }
+
+            .wishlist-item-actions {
+                justify-content: space-between;
+            }
+
+            .add-to-cart-btn,
+            .remove-btn {
+                flex: 1;
+                text-align: center;
+                justify-content: center;
+            }
+
+            .continue-shopping {
+                width: 100%;
+                padding: 12px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container"><input type="text" class="search-input" id="search-input"
+                        placeholder="Поиск по сайту"><button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span><span
+                                class="wishlist-counter" style="display: none;"></span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span><span
+                                class="cart-counter" style="display: none;"></span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container wishlist-page">
+        <div class="wishlist-header">
+            <h1 class="wishlist-title"><i class="fas fa-heart"></i> Избранное</h1>
+            <div class="header-buttons">
+                <a href="index.html" class="home-link"><i class="fas fa-home"></i> На главную</a>
+                <button class="clear-wishlist" id="clear-wishlist-btn"><i class="fas fa-trash-alt"></i>
+                    Очистить</button>
+            </div>
+        </div>
+        <div class="wishlist-container" id="wishlist-container"></div>
+        <div class="empty-wishlist" id="empty-wishlist" style="display: none;">
+            <div class="empty-icon"><i class="far fa-heart"></i></div>
+            <h2>Ваш список избранного пуст</h2>
+            <p>Добавляйте товары в избранное, чтобы не потерять их</p>
+            <a href="index.html" class="continue-shopping"><i class="fas fa-arrow-left"></i> Продолжить покупки <i
+                    class="fas fa-arrow-right"></i></a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            if (!adminButton) return;
+
+            const currentUser = getCurrentUser();
+
+            if (currentUser && currentUser.email === MASTER_ADMIN.email) {
+                adminButton.style.display = 'flex';
+                if (!currentUser.isAdmin) {
+                    currentUser.isAdmin = true;
+                    currentUser.id = MASTER_ADMIN.id;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                }
+            } else {
+                adminButton.style.display = 'none';
+            }
+        }
+
+        function updateUserStatusInHeader() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) {
+                    userStatusText.textContent = currentUser.name || 'Профиль';
+                } else {
+                    userStatusText.textContent = 'Войти';
+                }
+            }
+            updateAdminButtonVisibility();
+        }
+
+        function getWishlistStorageKey() {
+            const currentUser = getCurrentUser();
+            if (currentUser && currentUser.id) return `wishlist_${currentUser.id}`;
+            return 'wishlist_guest';
+        }
+
+        function getWishlist() {
+            const key = getWishlistStorageKey();
+            const wishlist = localStorage.getItem(key);
+            return wishlist ? JSON.parse(wishlist) : [];
+        }
+
+        function saveWishlist(wishlist) {
+            const key = getWishlistStorageKey();
+            localStorage.setItem(key, JSON.stringify(wishlist));
+            updateWishlistCounter();
+        }
+
+        function updateWishlistCounter() {
+            const wishlist = getWishlist();
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function updateCartCounter() {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function addToCart(product) {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const existingItem = cart.find(item => item.id === product.id);
+            if (existingItem) { existingItem.quantity += 1; }
+            else { cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image }); }
+            localStorage.setItem(cartKey, JSON.stringify(cart));
+            updateCartCounter();
+            showNotification('✅ Товар добавлен в корзину!', '#4CAF50');
+        }
+
+        function removeFromWishlist(productId) {
+            let wishlist = getWishlist();
+            wishlist = wishlist.filter(item => item.id !== productId);
+            saveWishlist(wishlist);
+            displayWishlistItems();
+            showNotification('🗑️ Товар удален из избранного', '#ff4444');
+        }
+
+        function clearWishlist() {
+            if (confirm('Вы уверены, что хотите очистить все избранное?')) { saveWishlist([]); displayWishlistItems(); showNotification('✨ Избранное очищено', '#ff4444'); }
+        }
+
+        function displayWishlistItems() {
+            const wishlistContainer = document.getElementById('wishlist-container');
+            const emptyWishlist = document.getElementById('empty-wishlist');
+            const wishlist = getWishlist();
+            wishlistContainer.innerHTML = '';
+            if (wishlist.length === 0) { emptyWishlist.style.display = 'block'; wishlistContainer.style.display = 'none'; }
+            else {
+                emptyWishlist.style.display = 'none';
+                wishlistContainer.style.display = 'flex';
+                wishlist.forEach(item => {
+                    const wishlistItem = document.createElement('div');
+                    wishlistItem.className = 'wishlist-item';
+                    wishlistItem.innerHTML = `<img src="${item.image || 'images/default-product.jpg'}" alt="${escapeHtml(item.name)}" class="wishlist-item-image" onerror="this.src='images/default-product.jpg'"><div class="wishlist-item-info"><div class="wishlist-item-name">${escapeHtml(item.name)}</div><div class="wishlist-item-price">${item.price.toLocaleString()} руб/шт.</div></div><div class="wishlist-item-actions"><button class="add-to-cart-btn" data-id="${item.id}"><i class="fas fa-cart-plus"></i> В корзину</button><button class="remove-btn" data-id="${item.id}"><i class="fas fa-times"></i> Удалить</button></div>`;
+                    wishlistContainer.appendChild(wishlistItem);
+                });
+                document.querySelectorAll('.add-to-cart-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const product = wishlist.find(p => p.id === id); if (product) addToCart(product); }); });
+                document.querySelectorAll('.remove-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); removeFromWishlist(id); }); });
+            }
+        }
+
+        function showNotification(message, color) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `position: fixed; bottom: 20px; right: 20px; background: ${color}; color: white; padding: 12px 20px; border-radius: 10px; z-index: 1000; font-weight: bold; font-size: 14px; animation: slideInRight 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            const style = document.createElement('style');
+            style.textContent = `@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
+            document.head.appendChild(style);
+            setTimeout(() => { notification.remove(); style.remove(); }, 3000);
+        }
+
+        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } });
+                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } } });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            displayWishlistItems();
+            updateCartCounter();
+            updateUserStatusInHeader();
+            setupSearch();
+            updateAdminButtonVisibility();
+            setTimeout(() => updateAdminButtonVisibility(), 100);
+            const clearBtn = document.getElementById('clear-wishlist-btn');
+            if (clearBtn) clearBtn.addEventListener('click', clearWishlist);
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

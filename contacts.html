@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>Контакты - BUBLDINGS STORE</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .contacts-section {
+            padding: 40px 0;
+        }
+
+        .section-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .contacts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        .contact-info h2,
+        .map-section h2 {
+            font-size: 24px;
+            color: #000;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #F2DD00;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 25px;
+        }
+
+        .contact-item i {
+            font-size: 20px;
+            color: #F2DD00;
+            margin-right: 15px;
+            margin-top: 5px;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .contact-item strong {
+            display: block;
+            color: #000;
+            margin-bottom: 5px;
+            font-size: 16px;
+        }
+
+        .contact-item p {
+            color: #666;
+            margin: 2px 0;
+            font-size: 15px;
+        }
+
+        .map-container {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .departments-section {
+            margin-top: 50px;
+        }
+
+        .departments-section h2 {
+            font-size: 24px;
+            color: #000;
+            margin-bottom: 30px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #F2DD00;
+        }
+
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .department-card {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .department-card:hover {
+            transform: translateY(-5px);
+            border-color: #F2DD00;
+            box-shadow: 0 5px 20px rgba(242, 221, 0, 0.15);
+        }
+
+        .department-card h3 {
+            font-size: 18px;
+            color: #000;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .department-card p {
+            color: #666;
+            margin: 8px 0;
+            font-size: 15px;
+        }
+
+        @media (max-width: 992px) {
+            .contacts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .departments-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .section-title {
+                font-size: 28px;
+            }
+
+            .contact-info h2,
+            .map-section h2,
+            .departments-section h2 {
+                font-size: 20px;
+            }
+
+            .departments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .department-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container"><input type="text" class="search-input" id="search-input"
+                        placeholder="Поиск по сайту"><button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span><span
+                                class="wishlist-counter" style="display: none;"></span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span><span
+                                class="cart-counter" style="display: none;"></span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="contacts-section">
+            <h1 class="section-title">Контакты</h1>
+            <div class="contacts-grid">
+                <div class="contact-info">
+                    <h2>Наши контактные данные</h2>
+                    <div class="contact-item"><i class="fas fa-map-marker-alt"></i>
+                        <div><strong>Адрес:</strong>
+                            <p>г. Москва, ул. Строителей, д. 25, офис 101</p>
+                            <p>Ближайшее метро: Строгино</p>
+                        </div>
+                    </div>
+                    <div class="contact-item"><i class="fas fa-phone"></i>
+                        <div><strong>Телефон:</strong>
+                            <p>+7 (495) 123-45-67 (многоканальный)</p>
+                            <p>+7 (800) 123-45-67 (бесплатный по России)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item"><i class="fas fa-envelope"></i>
+                        <div><strong>Email:</strong>
+                            <p>info@bubldings-store.ru (общие вопросы)</p>
+                            <p>order@bubldings-store.ru (заказы)</p>
+                        </div>
+                    </div>
+                    <div class="contact-item"><i class="fas fa-clock"></i>
+                        <div><strong>Режим работы:</strong>
+                            <p>Пн-Пт: 9:00 - 20:00</p>
+                            <p>Сб-Вс: 10:00 - 18:00</p>
+                            <p>Магазин работает без выходных</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="map-section">
+                    <h2>Мы на карте</h2>
+                    <div class="map-container" id="map"></div>
+                    <p style="margin-top: 10px; color: #666; font-size: 14px; text-align: center;">Нажмите на карту для
+                        увеличения и просмотра маршрута</p>
+                </div>
+            </div>
+            <div class="departments-section">
+                <h2>Наши отделы</h2>
+                <div class="departments-grid">
+                    <div class="department-card">
+                        <h3>Отдел продаж</h3>
+                        <p>+7 (495) 123-45-68</p>
+                        <p>sales@bubldings-store.ru</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Консультации по товарам и оформление заказов</p>
+                    </div>
+                    <div class="department-card">
+                        <h3>Служба поддержки</h3>
+                        <p>+7 (495) 123-45-69</p>
+                        <p>support@bubldings-store.ru</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Помощь по работе сайта и вопросы по доставке</p>
+                    </div>
+                    <div class="department-card">
+                        <h3>Оптовые продажи</h3>
+                        <p>+7 (495) 123-45-70</p>
+                        <p>wholesale@bubldings-store.ru</p>
+                        <p style="margin-top: 10px; font-size: 14px;">Сотрудничество для юридических лиц и оптовиков</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = getCurrentUser();
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email && currentUser.id === MASTER_ADMIN.id) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        function updateUserStatusInHeader() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) userStatusText.textContent = currentUser.name || 'Профиль';
+                else userStatusText.textContent = 'Войти';
+            }
+            updateAdminButtonVisibility();
+        }
+
+        function updateCartCounter() {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function updateWishlistCounter() {
+            const currentUser = getCurrentUser();
+            let wishlistKey = 'wishlist_guest';
+            if (currentUser && currentUser.id) wishlistKey = `wishlist_${currentUser.id}`;
+            const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } });
+                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } } });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function () {
+            updateUserStatusInHeader();
+            updateCartCounter();
+            updateWishlistCounter();
+            setupSearch();
+            updateAdminButtonVisibility();
+        });
+    </script>
+    <script src="https://api-maps.yandex.ru/2.1/?apikey=ваш_api_ключ&lang=ru_RU" type="text/javascript"></script>
+    <script>
+        if (typeof ymaps !== 'undefined') { ymaps.ready(init); }
+        function init() {
+            var myMap = new ymaps.Map("map", { center: [55.804, 37.394], zoom: 16 });
+            var myPlacemark = new ymaps.Placemark([55.804, 37.394], { balloonContentHeader: 'BUBLDINGS STORE', balloonContentBody: 'Магазин строительных материалов<br>ул. Строителей, д. 25', balloonContentFooter: 'Телефон: +7 (495) 123-45-67', hintContent: 'Наш магазин' }, { preset: 'islands#icon', iconColor: '#F2DD00' });
+            myMap.geoObjects.add(myPlacemark);
+            myPlacemark.balloon.open();
+        }
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

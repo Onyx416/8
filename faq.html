@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>Частые вопросы - BUBLDINGS STORE</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        * {
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .faq-page {
+            padding: 40px 0;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border-radius: 30px;
+            padding: 50px 40px;
+            margin-bottom: 50px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section h1 {
+            font-size: 42px;
+            font-weight: 800;
+            color: #F2DD00;
+            margin-bottom: 15px;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .faq-categories {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-bottom: 40px;
+        }
+
+        .category-btn {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            border-radius: 50px;
+            padding: 10px 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .category-btn.active {
+            background: #F2DD00;
+            border-color: #000;
+        }
+
+        .category-btn:hover {
+            border-color: #F2DD00;
+            transform: translateY(-2px);
+        }
+
+        .faq-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: #fff;
+            border-radius: 16px;
+            border: 2px solid #f0f0f0;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .faq-item:hover {
+            border-color: #F2DD00;
+        }
+
+        .faq-question {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .faq-question h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #000;
+            margin: 0;
+        }
+
+        .faq-question i {
+            font-size: 20px;
+            color: #F2DD00;
+            transition: transform 0.3s;
+        }
+
+        .faq-item.active .faq-question i {
+            transform: rotate(180deg);
+        }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            padding: 0 25px;
+        }
+
+        .faq-item.active .faq-answer {
+            max-height: 300px;
+            padding: 0 25px 20px 25px;
+        }
+
+        .faq-answer p {
+            color: #666;
+            line-height: 1.6;
+            margin: 0;
+        }
+
+        .faq-answer ul {
+            margin-top: 10px;
+            padding-left: 20px;
+        }
+
+        .faq-answer li {
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .contact-block {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+            margin-top: 50px;
+            border: 2px solid #f0f0f0;
+        }
+
+        .contact-block h3 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .contact-block p {
+            color: #666;
+            margin-bottom: 25px;
+        }
+
+        .contact-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 30px;
+            background: #F2DD00;
+            border: 2px solid #000;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #000;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .contact-btn:hover {
+            background: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .hero-section {
+                padding: 40px 20px;
+            }
+
+            .hero-section h1 {
+                font-size: 28px;
+            }
+
+            .faq-question h3 {
+                font-size: 15px;
+            }
+
+            .faq-question {
+                padding: 15px 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container"><input type="text" class="search-input" id="search-input"
+                        placeholder="Поиск по сайту"><button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span><span
+                                class="wishlist-counter" style="display: none;"></span></a></div>
+                    <div class="action-item" style="position: relative;"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span><span
+                                class="cart-counter" style="display: none;"></span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container faq-page">
+        <div class="hero-section">
+            <h1>Часто задаваемые вопросы</h1>
+            <p>Ответы на самые популярные вопросы наших клиентов</p>
+        </div>
+        <div class="faq-categories">
+            <button class="category-btn active" data-category="all">Все вопросы</button>
+            <button class="category-btn" data-category="order">Оформление заказа</button>
+            <button class="category-btn" data-category="delivery">Доставка</button>
+            <button class="category-btn" data-category="payment">Оплата</button>
+            <button class="category-btn" data-category="return">Возврат и обмен</button>
+        </div>
+        <div class="faq-grid" id="faq-grid"></div>
+        <div class="contact-block">
+            <h3>Не нашли ответ на свой вопрос?</h3>
+            <p>Свяжитесь с нами любым удобным способом, и мы обязательно поможем!</p>
+            <a href="contacts.html" class="contact-btn"><i class="fas fa-envelope"></i> Связаться с поддержкой</a>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = getCurrentUser();
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email && currentUser.id === MASTER_ADMIN.id) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        const faqData = [
+            { category: "order", question: "Как оформить заказ?", answer: "Вы можете оформить заказ несколькими способами:<br>• На сайте — добавьте товары в корзину и оформите заказ<br>• По телефону +7 (495) 123-45-67<br>• В нашем магазине по адресу г. Москва, ул. Строителей, 25" },
+            { category: "order", question: "Можно ли изменить заказ после оформления?", answer: "Да, вы можете изменить заказ до момента его отправки. Для этого свяжитесь с нашим менеджером по телефону или через форму обратной связи." },
+            { category: "delivery", question: "Сколько стоит доставка?", answer: "Стоимость доставки зависит от суммы заказа и района доставки:<br>• При заказе от 5000 ₽ доставка по Москве бесплатно<br>• Стандартная доставка по Москве — 450 ₽<br>• Доставка по области — от 600 ₽" },
+            { category: "delivery", question: "Как быстро доставляют заказы?", answer: "Мы доставляем заказы в день оформления (при заказе до 16:00) или на следующий день. Точное время доставки согласовывается с менеджером." },
+            { category: "payment", question: "Какие способы оплаты доступны?", answer: "Мы принимаем следующие способы оплаты:<br>• Наличными курьеру или в магазине<br>• Банковской картой онлайн на сайте<br>• Безналичный расчет для юридических лиц" },
+            { category: "payment", question: "Безопасно ли оплачивать картой на сайте?", answer: "Да, оплата на нашем сайте абсолютно безопасна. Все данные передаются в зашифрованном виде, мы не храним информацию о вашей карте." },
+            { category: "return", question: "Можно ли вернуть товар?", answer: "Да, вы можете вернуть товар надлежащего качества в течение 14 дней с момента покупки. Товар должен быть в оригинальной упаковке и без следов использования." },
+            { category: "return", question: "Что делать, если товар оказался бракованным?", answer: "В случае обнаружения брака, пожалуйста, свяжитесь с нами по телефону или email. Мы проведем экспертизу и заменим товар или вернем деньги." }
+        ];
+
+        let currentCategory = "all";
+
+        function renderFaq() {
+            const container = document.getElementById('faq-grid');
+            const filtered = currentCategory === "all" ? faqData : faqData.filter(item => item.category === currentCategory);
+            container.innerHTML = filtered.map((item, index) => `<div class="faq-item" data-category="${item.category}"><div class="faq-question" onclick="toggleFaq(this)"><h3>${item.question}</h3><i class="fas fa-chevron-down"></i></div><div class="faq-answer"><p>${item.answer}</p></div></div>`).join('');
+        }
+
+        window.toggleFaq = function (element) { const item = element.closest('.faq-item'); item.classList.toggle('active'); }
+
+        function setupCategories() {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.addEventListener('click', () => { document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); currentCategory = btn.getAttribute('data-category'); renderFaq(); });
+            });
+        }
+
+        function updateUserStatus() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) userStatusText.textContent = currentUser.name || 'Профиль';
+                else userStatusText.textContent = 'Войти';
+            }
+        }
+
+        function updateCartCounter() {
+            const currentUser = getCurrentUser();
+            let cartKey = 'cart_guest';
+            if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
+            const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function updateWishlistCounter() {
+            const currentUser = getCurrentUser();
+            let wishlistKey = 'wishlist_guest';
+            if (currentUser && currentUser.id) wishlistKey = `wishlist_${currentUser.id}`;
+            const wishlist = JSON.parse(localStorage.getItem(wishlistKey)) || [];
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } });
+                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } } });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderFaq();
+            setupCategories();
+            updateUserStatus();
+            updateCartCounter();
+            updateWishlistCounter();
+            setupSearch();
+            updateAdminButtonVisibility();
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

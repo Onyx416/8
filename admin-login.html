@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход для администратора - BUBLDINGS STORE</title>
+    <link href="https://fonts.googleapis.com/css?family=Inter&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .admin-login-page {
+            padding: 40px 0;
+            min-height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .admin-login-container {
+            background: #fff;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            border: 2px solid #f0f0f0;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .admin-login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .admin-login-header i {
+            font-size: 48px;
+            color: #F2DD00;
+            margin-bottom: 15px;
+        }
+
+        .admin-login-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 10px;
+        }
+
+        .admin-login-subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .admin-form-group {
+            margin-bottom: 20px;
+        }
+
+        .admin-form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .admin-form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+
+        .admin-form-input:focus {
+            outline: none;
+            border-color: #F2DD00;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(242, 221, 0, 0.1);
+        }
+
+        .admin-login-btn {
+            width: 100%;
+            background: #F2DD00;
+            border: 2px solid #000;
+            border-radius: 50px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .admin-login-btn:hover {
+            background: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        .back-to-site {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 25px;
+            color: #666;
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+
+        .back-to-site:hover {
+            color: #F2DD00;
+        }
+
+        .error-message {
+            background-color: #ff4444;
+            color: white;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .admin-info {
+            background-color: #f8f8f8;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #666;
+            text-align: center;
+            border: 1px solid #e0e0e0;
+        }
+
+        .admin-info i {
+            color: #F2DD00;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Поиск по сайту">
+                    <button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span></a></div>
+                    <div class="action-item"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-user"></i><span class="action-text" id="user-status-text">Войти</span></a>
+                    </div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container admin-login-page">
+        <div class="admin-login-container">
+            <div class="admin-login-header">
+                <i class="fas fa-crown"></i>
+                <h1 class="admin-login-title">Вход для администратора</h1>
+                <div class="admin-login-subtitle">Введите логин и пароль для доступа к панели управления</div>
+            </div>
+            <div class="error-message" id="error-message"><i class="fas fa-exclamation-circle"></i> Неверный логин или
+                пароль</div>
+            <form id="admin-login-form">
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Email</label>
+                    <input type="email" id="admin-login" class="admin-form-input" placeholder="admin1@gmail.com"
+                        required>
+                </div>
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Пароль</label>
+                    <input type="password" id="admin-password" class="admin-form-input" placeholder="Введите пароль"
+                        required>
+                </div>
+                <button type="submit" class="admin-login-btn"><i class="fas fa-sign-in-alt"></i> Войти в панель
+                    администратора</button>
+            </form>
+            <a href="index.html" class="back-to-site"><i class="fas fa-arrow-left"></i> Вернуться на сайт</a>
+            <div class="admin-info"><i class="fas fa-info-circle"></i> Доступ только для главного администратора</div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // ДАННЫЕ ТОЛЬКО ГЛАВНОГО АДМИНИСТРАТОРА
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            phone: '+7 (111) 111-11-11',
+            email: 'admin1@gmail.com',
+            password: 'админ1234',
+            isAdmin: true
+        };
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        function updateUserStatus() {
+            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) {
+                    userStatusText.textContent = currentUser.name || 'Профиль';
+                } else {
+                    userStatusText.textContent = 'Войти';
+                }
+            }
+            updateAdminButtonVisibility();
+        }
+
+        // Обработчик формы входа
+        document.getElementById('admin-login-form').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const login = document.getElementById('admin-login').value.trim();
+            const password = document.getElementById('admin-password').value;
+            const errorMessage = document.getElementById('error-message');
+            errorMessage.classList.remove('show');
+
+            if (login === MASTER_ADMIN.email && password === MASTER_ADMIN.password) {
+                // СОХРАНЯЕМ АДМИНА С ФЛАГОМ isAdmin: true
+                const adminUser = {
+                    id: MASTER_ADMIN.id,
+                    name: MASTER_ADMIN.name,
+                    email: MASTER_ADMIN.email,
+                    phone: MASTER_ADMIN.phone,
+                    isAdmin: true
+                };
+
+                localStorage.setItem('currentUser', JSON.stringify(adminUser));
+
+                // Обновляем список пользователей
+                let users = JSON.parse(localStorage.getItem('users')) || [];
+                const existingIndex = users.findIndex(u => u.email === MASTER_ADMIN.email);
+
+                if (existingIndex !== -1) {
+                    users[existingIndex] = { ...users[existingIndex], ...adminUser, password: MASTER_ADMIN.password };
+                } else {
+                    users.push({ ...adminUser, password: MASTER_ADMIN.password, createdAt: new Date().toISOString(), orders: [] });
+                }
+
+                localStorage.setItem('users', JSON.stringify(users));
+
+                sessionStorage.setItem('adminSession', 'true');
+                sessionStorage.setItem('adminData', JSON.stringify(adminUser));
+
+                updateAdminButtonVisibility();
+                window.location.href = 'admin.html';
+            } else {
+                errorMessage.classList.add('show');
+                setTimeout(() => errorMessage.classList.remove('show'), 3000);
+            }
+        });
+
+        // Проверяем при загрузке
+        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+        if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email) {
+            window.location.href = 'admin.html';
+        }
+
+        updateUserStatus();
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; }
+                    }
+                });
+            }
+        }
+        setupSearch();
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>

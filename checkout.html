@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#F2DD00">
+    <title>Оформление заказа - BUBLDINGS STORE</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .checkout-page {
+            padding: 40px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .checkout-title {
+            font-size: 32px;
+            font-weight: bold;
+            color: #000;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #F2DD00;
+        }
+
+        .checkout-grid {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 40px;
+        }
+
+        .checkout-form-section {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eaeaea;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+
+        .section-number {
+            background-color: #F2DD00;
+            color: #000;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+        }
+
+        .user-info-card {
+            background: linear-gradient(135deg, #f8f9fa, #fff);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 2px solid #F2DD00;
+        }
+
+        .user-info-card h4 {
+            margin-bottom: 15px;
+            color: #000;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .user-info-card h4 i {
+            color: #F2DD00;
+        }
+
+        .user-info-row {
+            display: flex;
+            margin-bottom: 12px;
+            padding: 8px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .user-info-label {
+            width: 100px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .user-info-value {
+            flex: 1;
+            color: #000;
+            font-weight: 500;
+        }
+
+        .edit-profile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            margin-top: 10px;
+            color: #F2DD00;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .delivery-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .delivery-option.selected {
+            border-color: #F2DD00;
+            background-color: rgba(242, 221, 0, 0.05);
+        }
+
+        .option-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .option-icon {
+            width: 40px;
+            height: 40px;
+            background-color: #f5f5f5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            color: #000;
+            font-size: 18px;
+        }
+
+        .option-title {
+            font-weight: 600;
+            font-size: 16px;
+            color: #000;
+        }
+
+        .option-description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .option-price {
+            font-weight: 600;
+            color: #000;
+            font-size: 16px;
+        }
+
+        .payment-options {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .payment-option {
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-option.selected {
+            border-color: #F2DD00;
+            background-color: rgba(242, 221, 0, 0.05);
+        }
+
+        .payment-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: #000;
+            margin-bottom: 5px;
+        }
+
+        .payment-description {
+            color: #666;
+            font-size: 13px;
+        }
+
+        .order-summary {
+            position: sticky;
+            top: 100px;
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #eaeaea;
+            height: fit-content;
+        }
+
+        .summary-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F2DD00;
+        }
+
+        .cart-items-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 20px;
+        }
+
+        .cart-item-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        .cart-item-name {
+            flex: 1;
+            color: #333;
+        }
+
+        .cart-item-price {
+            color: #000;
+            font-weight: 500;
+        }
+
+        .price-breakdown {
+            margin-top: 20px;
+        }
+
+        .price-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .total-row {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #F2DD00;
+        }
+
+        .total-label {
+            font-weight: 600;
+            color: #000;
+            font-size: 18px;
+        }
+
+        .total-value {
+            font-weight: 700;
+            color: #000;
+            font-size: 20px;
+        }
+
+        .submit-order-btn {
+            background-color: #F2DD00;
+            color: #000;
+            border: none;
+            width: 100%;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 25px;
+            border: 2px solid #000;
+        }
+
+        .submit-order-btn:hover {
+            background-color: #e6d000;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #F2DD00;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .login-prompt {
+            text-align: center;
+            padding: 20px;
+            background: #f8f8f8;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .login-prompt a {
+            color: #F2DD00;
+            font-weight: bold;
+        }
+
+        .back-to-cart {
+            display: inline-block;
+            margin-top: 15px;
+            color: #666;
+            text-decoration: none;
+        }
+
+        .order-success {
+            text-align: center;
+            padding: 60px;
+            background: white;
+            border-radius: 15px;
+        }
+
+        .order-success i {
+            font-size: 64px;
+            color: #4CAF50;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 992px) {
+            .checkout-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+
+            .delivery-options,
+            .payment-options {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">
+                    <div class="logo-main">BUBLDINGS STORE</div>
+                    <div class="logo-sub">A BUILDING SUPPLIES STORE</div>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" id="search-input" placeholder="Поиск по сайту">
+                    <button class="search-button" id="search-button">Найти</button>
+                </div>
+                <div class="header-actions">
+                    <div class="action-item"><a href="contacts.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-phone-alt"></i><span class="action-text">Контакты</span></a></div>
+                    <div class="action-item"><a href="wishlist.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-heart"></i><span class="action-text">Избранное</span></a></div>
+                    <div class="action-item"><a href="cart.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-shopping-cart"></i><span class="action-text">Корзина</span></a></div>
+                    <div class="action-item"><a href="profile.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"
+                            id="profile-link"><i class="fas fa-user"></i><span class="action-text"
+                                id="user-status-text">Войти</span></a></div>
+                    <div class="action-item admin-button" id="admin-button-header" style="display: none;"><a
+                            href="admin-login.html"
+                            style="text-decoration: none; color: inherit; display: flex; flex-direction: column; align-items: center;"><i
+                                class="fas fa-crown"></i><span class="action-text">Админ</span></a></div>
+                </div>
+            </div>
+            <nav>
+                <ul class="nav-menu">
+                    <li><a href="catalog.html" class="catalog-link"><span class="catalog-icon">三</span>Каталог</a></li>
+                    <li><a href="index.html" id="main-page-link">Главная</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Электрика">Электрика</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Ламинат">Ламинат</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Краски">Краски</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Инструменты">Инструменты</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Сантехника">Сантехника</a></li>
+                    <li><a href="#" class="category-nav-link" data-category="Строительные материалы">Строительные
+                            материалы</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container checkout-page">
+        <h1 class="checkout-title">Оформление заказа</h1>
+        <div id="checkout-container"></div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Компания</h3>
+                    <ul>
+                        <li><a href="about.html">о нас</a></li>
+                        <li><a href="contacts.html">контакты</a></li>
+                        <li><a href="vacancies.html">вакансии</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Покупателям</h3>
+                    <ul>
+                        <li><a href="faq.html">частые вопросы</a></li>
+                        <li><a href="legal.html">юридическая информация</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Наши проекты</h3>
+                    <ul>
+                        <li><a href="bs-gan.html">BS GAN</a></li>
+                        <li><a href="bs-team.html">BS TEAM</a></li>
+                        <li><a href="bs-gin.html">BS GIN</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Контакты</h3>
+                    <ul>
+                        <li><i class="fas fa-phone"></i> +7 (495) 123-45-67</li>
+                        <li><i class="fas fa-envelope"></i> info@bubldings-store.ru</li>
+                        <li><i class="fas fa-map-marker-alt"></i> г. Москва, ул. Строителей, 25</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>© BUBLDINGS STORE. Все права защищены.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
+        const MASTER_ADMIN = {
+            id: 'admin_main',
+            name: 'админ',
+            email: 'admin1@gmail.com',
+            isAdmin: true
+        };
+
+        function getCurrentUser() {
+            const user = localStorage.getItem('currentUser');
+            return user ? JSON.parse(user) : null;
+        }
+
+        function updateAdminButtonVisibility() {
+            const adminButton = document.getElementById('admin-button-header');
+            const currentUser = getCurrentUser();
+            if (adminButton) {
+                if (currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email && currentUser.id === MASTER_ADMIN.id) {
+                    adminButton.style.display = 'flex';
+                } else {
+                    adminButton.style.display = 'none';
+                }
+            }
+        }
+
+        function getUsers() {
+            const users = localStorage.getItem('users');
+            return users ? JSON.parse(users) : [];
+        }
+
+        function getFullUserData() {
+            const currentUser = getCurrentUser();
+            if (!currentUser) return null;
+            const users = getUsers();
+            return users.find(u => u.id === currentUser.id) || currentUser;
+        }
+
+        function updateUserStatusInHeader() {
+            const currentUser = getCurrentUser();
+            const userStatusText = document.getElementById('user-status-text');
+            if (userStatusText) {
+                if (currentUser) userStatusText.textContent = currentUser.name || 'Профиль';
+                else userStatusText.textContent = 'Войти';
+            }
+            updateAdminButtonVisibility();
+        }
+
+        function getCartStorageKey() {
+            const currentUser = getCurrentUser();
+            if (currentUser && currentUser.id) return `cart_${currentUser.id}`;
+            return 'cart_guest';
+        }
+
+        function getCart() {
+            const key = getCartStorageKey();
+            const cart = localStorage.getItem(key);
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function clearCart() {
+            const key = getCartStorageKey();
+            localStorage.removeItem(key);
+        }
+
+        // === СОХРАНЕНИЕ ЗАКАЗА В FIRESTORE И LOCALSTORAGE С userId ===
+        async function saveOrderToFirestore(orderData) {
+            try {
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                const { getFirestore, collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+                    authDomain: "building-store-66294.firebaseapp.com",
+                    projectId: "building-store-66294",
+                    storageBucket: "building-store-66294.firebasestorage.app",
+                    messagingSenderId: "192694380898",
+                    appId: "1:192694380898:web:51837f94629555d310e43b"
+                };
+
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+
+                const docRef = await addDoc(collection(db, "orders"), {
+                    ...orderData,
+                    createdAt: Timestamp.fromDate(new Date()),
+                    updatedAt: Timestamp.fromDate(new Date())
+                });
+                console.log("✅ Заказ сохранен в Firestore, ID:", docRef.id);
+                return docRef.id;
+            } catch (error) {
+                console.error("❌ Ошибка сохранения в Firestore:", error);
+                return null;
+            }
+        }
+
+        async function saveOrder(orderData) {
+            // 1. Сохраняем в localStorage
+            const orders = JSON.parse(localStorage.getItem('orders')) || [];
+            orders.push(orderData);
+            localStorage.setItem('orders', JSON.stringify(orders));
+
+            // 2. Сохраняем в профиль пользователя
+            const currentUser = getCurrentUser();
+            if (currentUser) {
+                const users = getUsers();
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    if (!users[userIndex].orders) users[userIndex].orders = [];
+                    users[userIndex].orders.push(orderData);
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+            }
+
+            // 3. Сохраняем в Firestore
+            await saveOrderToFirestore(orderData);
+
+            console.log("✅ Заказ сохранен:", orderData.orderNumber);
+        }
+
+        let currentTotal = 0;
+        let currentDeliveryCost = 0;
+
+        function renderCheckout() {
+            const container = document.getElementById('checkout-container');
+            const cart = getCart();
+            const userData = getFullUserData();
+            const isLoggedIn = userData !== null;
+
+            if (cart.length === 0) {
+                container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-shopping-cart" style="font-size:64px;color:#ccc;"></i><h2>Корзина пуста</h2><p>Добавьте товары перед оформлением заказа</p><a href="index.html" class="submit-order-btn" style="display:inline-block; text-decoration:none;">Вернуться к покупкам</a></div>`;
+                return;
+            }
+
+            currentTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            const cartItemsHTML = cart.map(item => `<div class="cart-item-summary"><div class="cart-item-name">${escapeHtml(item.name)} x ${item.quantity}</div><div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} ₽</div></div>`).join('');
+
+            container.innerHTML = `
+                <div class="checkout-grid">
+                    <div class="checkout-form">
+                        ${isLoggedIn ? `
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">1</div><div class="section-title">Данные получателя</div></div>
+                            <div class="user-info-card">
+                                <h4><i class="fas fa-user-check"></i> Информация из профиля</h4>
+                                <div class="user-info-row"><div class="user-info-label">ФИО:</div><div class="user-info-value">${escapeHtml(userData.name)}</div></div>
+                                <div class="user-info-row"><div class="user-info-label">Телефон:</div><div class="user-info-value">${escapeHtml(userData.phone || 'Не указан')}</div></div>
+                                <div class="user-info-row"><div class="user-info-label">Email:</div><div class="user-info-value">${escapeHtml(userData.email)}</div></div>
+                                <a href="profile.html" class="edit-profile-link"><i class="fas fa-edit"></i> Редактировать профиль</a>
+                            </div>
+                        </div>
+                        ` : `
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">1</div><div class="section-title">Данные получателя</div></div>
+                            <div class="login-prompt"><i class="fas fa-info-circle"></i> <a href="auth.html">Войдите</a> или <a href="auth.html">зарегистрируйтесь</a>, чтобы заказы сохранялись в историю</div>
+                            <div class="form-row"><div class="form-group"><label>ФИО *</label><input type="text" id="fullname" placeholder="Иванов Иван Иванович" required></div><div class="form-group"><label>Телефон *</label><input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required></div></div>
+                            <div class="form-group"><label>Email *</label><input type="email" id="email" placeholder="example@mail.ru" required></div>
+                        </div>
+                        `}
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">2</div><div class="section-title">Способ получения</div></div>
+                            <div class="delivery-options">
+                                <div class="delivery-option selected" data-delivery="pickup"><div class="option-header"><div class="option-icon"><i class="fas fa-store"></i></div><div class="option-title">Забрать в магазине</div></div><div class="option-description">Самовывоз из нашего магазина</div><div class="option-price">Бесплатно</div></div>
+                                <div class="delivery-option" data-delivery="courier"><div class="option-header"><div class="option-icon"><i class="fas fa-truck"></i></div><div class="option-title">Доставка курьером</div></div><div class="option-description">Доставка по Москве и области</div><div class="option-price">450 ₽</div></div>
+                            </div>
+                        </div>
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">3</div><div class="section-title">Адрес доставки</div></div>
+                            <div class="form-group"><textarea id="address" rows="3" placeholder="Город, улица, дом, квартира"></textarea></div>
+                        </div>
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">4</div><div class="section-title">Способ оплаты</div></div>
+                            <div class="payment-options">
+                                <div class="payment-option selected" data-payment="online"><div class="payment-title">Оплатить онлайн</div><div class="payment-description">Банковской картой на сайте</div></div>
+                                <div class="payment-option" data-payment="cash"><div class="payment-title">Наличными при получении</div><div class="payment-description">Оплата курьеру или в магазине</div></div>
+                            </div>
+                        </div>
+                        <div class="checkout-form-section">
+                            <div class="section-header"><div class="section-number">5</div><div class="section-title">Комментарий</div></div>
+                            <div class="form-group"><textarea id="comment" rows="3" placeholder="Дополнительная информация..."></textarea></div>
+                        </div>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-title">Ваш заказ</div>
+                        <div class="cart-items-list">${cartItemsHTML}</div>
+                        <div class="price-breakdown">
+                            <div class="price-row"><div class="price-label">Стоимость товаров</div><div class="price-value">${currentTotal.toLocaleString()} ₽</div></div>
+                            <div class="price-row" id="delivery-row"><div class="price-label">Доставка</div><div class="price-value" id="delivery-value">Бесплатно</div></div>
+                            <div class="price-row total-row"><div class="price-label total-label">Итого к оплате</div><div class="price-value total-value" id="total-value">${currentTotal.toLocaleString()} ₽</div></div>
+                        </div>
+                        <button class="submit-order-btn" id="submit-order-btn">Подтвердить заказ</button>
+                        <a href="cart.html" class="back-to-cart"><i class="fas fa-arrow-left"></i> Вернуться к корзине</a>
+                    </div>
+                </div>
+            `;
+
+            document.querySelectorAll('.delivery-option').forEach(opt => {
+                opt.addEventListener('click', function () {
+                    document.querySelectorAll('.delivery-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                    updateDeliveryCost();
+                });
+            });
+
+            document.querySelectorAll('.payment-option').forEach(opt => {
+                opt.addEventListener('click', function () {
+                    document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                    this.classList.add('selected');
+                });
+            });
+
+            const phoneInput = document.getElementById('phone');
+            if (phoneInput) phoneInput.addEventListener('input', formatPhone);
+
+            document.getElementById('submit-order-btn').addEventListener('click', submitOrder);
+        }
+
+        function updateDeliveryCost() {
+            const selectedDelivery = document.querySelector('.delivery-option.selected');
+            const deliveryPrice = selectedDelivery?.querySelector('.option-price')?.textContent || 'Бесплатно';
+            const deliveryValue = document.getElementById('delivery-value');
+            const totalValue = document.getElementById('total-value');
+            let deliveryCost = 0;
+            if (deliveryPrice.includes('450')) deliveryCost = 450;
+            if (deliveryValue) deliveryValue.textContent = deliveryCost === 0 ? 'Бесплатно' : deliveryCost.toLocaleString() + ' ₽';
+            if (totalValue) {
+                const totalWithDelivery = currentTotal + deliveryCost;
+                totalValue.textContent = totalWithDelivery.toLocaleString() + ' ₽';
+            }
+            currentDeliveryCost = deliveryCost;
+        }
+
+        function formatPhone(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.startsWith('7') || value.startsWith('8')) value = value.substring(1);
+            let formatted = '+7 (';
+            if (value.length > 0) formatted += value.substring(0, 3);
+            if (value.length >= 4) formatted += ') ' + value.substring(3, 6);
+            if (value.length >= 7) formatted += '-' + value.substring(6, 8);
+            if (value.length >= 9) formatted += '-' + value.substring(8, 10);
+            e.target.value = formatted;
+        }
+
+        async function submitOrder() {
+            const cart = getCart();
+            if (cart.length === 0) {
+                alert('Корзина пуста!');
+                return;
+            }
+
+            const isLoggedIn = getFullUserData() !== null;
+            const currentUser = getCurrentUser();
+            const userId = currentUser ? currentUser.id : null;
+            let customerData;
+
+            if (isLoggedIn) {
+                const userData = getFullUserData();
+                customerData = { name: userData.name, phone: userData.phone || 'Не указан', email: userData.email };
+            } else {
+                const fullname = document.getElementById('fullname')?.value.trim();
+                const phone = document.getElementById('phone')?.value.trim();
+                const email = document.getElementById('email')?.value.trim();
+
+                if (!fullname) { alert('Пожалуйста, введите ФИО'); return; }
+                if (!phone) { alert('Пожалуйста, введите телефон'); return; }
+                if (!email) { alert('Пожалуйста, введите email'); return; }
+                customerData = { name: fullname, phone: phone, email: email };
+            }
+
+            const selectedDelivery = document.querySelector('.delivery-option.selected');
+            const deliveryMethod = selectedDelivery?.querySelector('.option-title')?.textContent || 'Самовывоз';
+            const deliveryPrice = selectedDelivery?.querySelector('.option-price')?.textContent || '0';
+            const deliveryCost = deliveryPrice.includes('450') ? 450 : 0;
+
+            const address = document.getElementById('address')?.value || '';
+            const comment = document.getElementById('comment')?.value || '';
+            const selectedPayment = document.querySelector('.payment-option.selected');
+            const paymentMethod = selectedPayment?.querySelector('.payment-title')?.textContent || 'Оплата онлайн';
+            const totalWithDelivery = currentTotal + deliveryCost;
+
+            const orderData = {
+                orderNumber: 'ORD-' + Date.now(),
+                date: new Date().toLocaleString('ru-RU'),
+                userId: userId,  // ← ПРИВЯЗКА К ПОЛЬЗОВАТЕЛЮ
+                customer: customerData,
+                delivery: { method: deliveryMethod, address: address || 'Не указан', cost: deliveryCost },
+                payment: { method: paymentMethod, status: 'pending' },
+                items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity, total: item.price * item.quantity })),
+                subtotal: currentTotal,
+                deliveryCost: deliveryCost,
+                total: totalWithDelivery,
+                comment: comment,
+                status: 'новый'
+            };
+
+            const submitBtn = document.getElementById('submit-order-btn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление...';
+            submitBtn.disabled = true;
+
+            try {
+                await saveOrder(orderData);
+                clearCart();
+
+                const container = document.getElementById('checkout-container');
+                container.innerHTML = `
+                    <div class="order-success">
+                        <i class="fas fa-check-circle"></i>
+                        <h2>Заказ оформлен!</h2>
+                        <p>Номер заказа: <strong>${orderData.orderNumber}</strong></p>
+                        <p>Сумма заказа: ${totalWithDelivery.toLocaleString()} ₽</p>
+                        <p>Детали отправлены на почту ${customerData.email}</p>
+                        <p>${userId ? '✅ Заказ сохранен в вашей истории' : 'ℹ️ Для сохранения истории заказов войдите в аккаунт'}</p>
+                        <a href="index.html" class="submit-order-btn" style="display:inline-block; text-decoration:none; margin-top:20px;">Вернуться на главную</a>
+                    </div>
+                `;
+                updateCartCounterInHeader();
+            } catch (error) {
+                console.error('Ошибка при оформлении заказа:', error);
+                alert('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте снова.');
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function updateCartCounterInHeader() {
+            const cart = getCart();
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
+            const counter = document.querySelector('.cart-counter');
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function setupSearch() {
+            const searchInput = document.getElementById('search-input');
+            const searchButton = document.getElementById('search-button');
+            if (searchButton && searchInput) {
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        sessionStorage.setItem('searchQuery', query);
+                        window.location.href = 'index.html';
+                    }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            sessionStorage.setItem('searchQuery', query);
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCheckout();
+            updateUserStatusInHeader();
+            setupSearch();
+            updateAdminButtonVisibility();
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
+        });
+    </script>
+</body>
+
+</html>
