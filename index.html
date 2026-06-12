@@ -414,6 +414,7 @@
             return card;
         }
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ addToCart - добавляем категорию товара
         function addToCart(event) {
             event.preventDefault();
             event.stopPropagation();
@@ -424,10 +425,25 @@
             const name = card.querySelector('.product-title').textContent;
             const price = parseInt(card.querySelector('.product-price').textContent.replace(/[^0-9]/g, ''));
             const image = card.querySelector('.product-image img')?.src || 'images/default-product.jpg';
+            
+            // НАХОДИМ КАТЕГОРИЮ ТОВАРА
+            const productData = allProducts.find(p => p.id === productId);
+            const category = productData ? productData.category : 'Другое';
+            
             let cart = getCart();
             const existing = cart.find(item => item.id === productId);
-            if (existing) { existing.quantity += 1; }
-            else { cart.push({ id: productId, name: name, price: price, quantity: 1, image: image }); }
+            if (existing) { 
+                existing.quantity += 1; 
+            } else { 
+                cart.push({ 
+                    id: productId, 
+                    name: name, 
+                    price: price, 
+                    quantity: 1, 
+                    image: image,
+                    category: category  // ← ДОБАВЛЯЕМ КАТЕГОРИЮ
+                }); 
+            }
             saveCart(cart);
             showNotification(`✅ ${name} добавлен в корзину!`, '#F2DD00');
         }
