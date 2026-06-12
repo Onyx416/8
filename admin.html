@@ -118,7 +118,8 @@
         .products-list,
         .stats-container,
         .orders-container,
-        .subcategories-container {
+        .subcategories-container,
+        .reviews-container {
             background: white;
             padding: 25px;
             border-radius: 20px;
@@ -129,7 +130,8 @@
         .products-list h2,
         .stats-container h2,
         .orders-container h2,
-        .subcategories-container h2 {
+        .subcategories-container h2,
+        .reviews-container h2 {
             margin-bottom: 25px;
             color: #1a1a2e;
             border-left: 4px solid #F2DD00;
@@ -195,6 +197,258 @@
 
         .btn-danger:hover {
             background: #cc0000;
+        }
+
+        /* Стили для отзывов */
+        .reviews-list-admin {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .review-card-admin {
+            background: #fff;
+            border: 2px solid #f0f0f0;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .review-card-admin:hover {
+            border-color: #F2DD00;
+            box-shadow: 0 5px 15px rgba(242, 221, 0, 0.1);
+        }
+
+        .review-header-admin {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .review-product-info {
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .review-product-info i {
+            color: #F2DD00;
+            margin-right: 6px;
+        }
+
+        .review-stars-admin {
+            color: #FFB800;
+            font-size: 14px;
+        }
+
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .review-user i {
+            color: #F2DD00;
+            font-size: 16px;
+        }
+
+        .review-user-name {
+            font-weight: 600;
+            color: #000;
+        }
+
+        .review-date-admin {
+            color: #999;
+            font-size: 12px;
+        }
+
+        .review-text-admin {
+            color: #555;
+            line-height: 1.5;
+            margin: 12px 0;
+            padding: 12px;
+            background: #fafafa;
+            border-radius: 10px;
+        }
+
+        .review-actions-admin {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .review-actions-admin button {
+            padding: 6px 16px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .review-actions-admin .edit-review-btn {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .review-actions-admin .edit-review-btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+
+        .review-actions-admin .delete-review-btn {
+            background: #ff4444;
+            color: white;
+        }
+
+        .review-actions-admin .delete-review-btn:hover {
+            background: #cc0000;
+            transform: translateY(-2px);
+        }
+
+        /* Модальное окно редактирования отзыва */
+        .review-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .review-modal.active {
+            display: flex;
+        }
+
+        .review-modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .review-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #F2DD00;
+        }
+
+        .review-modal-header h3 {
+            font-size: 22px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .review-modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            transition: color 0.3s;
+        }
+
+        .review-modal-close:hover {
+            color: #ff4444;
+        }
+
+        .review-modal .star-rating {
+            display: flex;
+            flex-direction: row;
+            justify-content: flex-start;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .review-modal .star-rating label {
+            font-size: 30px;
+            color: #ddd;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .review-modal .star-rating label:hover,
+        .review-modal .star-rating label:hover~label,
+        .review-modal .star-rating input:checked~label {
+            color: #FFB800;
+        }
+
+        .review-modal .star-rating input {
+            display: none;
+        }
+
+        .review-modal textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            resize: vertical;
+            margin-bottom: 20px;
+        }
+
+        .review-modal textarea:focus {
+            outline: none;
+            border-color: #F2DD00;
+        }
+
+        .review-filter {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .review-filter input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            min-width: 200px;
+        }
+
+        .review-filter select {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            background: white;
+            cursor: pointer;
         }
 
         .product-search-bar {
@@ -870,25 +1124,6 @@
 </head>
 
 <body>
-    <script>
-        (function checkAdminAccess() {
-            const MASTER_ADMIN = { id: 'admin_main', name: 'админ', email: 'admin1@gmail.com', phone: '+7 (111) 111-11-11', password: 'админ1234', isAdmin: true };
-            let isAdmin = false;
-            const adminSession = sessionStorage.getItem('adminSession');
-            const adminData = sessionStorage.getItem('adminData');
-            if (adminSession === 'true' && adminData) {
-                try { const admin = JSON.parse(adminData); if (admin.isAdmin === true && admin.email === MASTER_ADMIN.email) isAdmin = true; } catch (e) { }
-            }
-            const currentUser = JSON.parse(localStorage.getItem('currentUser'));
-            if (!isAdmin && currentUser && currentUser.isAdmin === true && currentUser.email === MASTER_ADMIN.email) {
-                isAdmin = true;
-                sessionStorage.setItem('adminSession', 'true');
-                sessionStorage.setItem('adminData', JSON.stringify(currentUser));
-            }
-            if (!isAdmin) window.location.href = 'admin-login.html';
-        })();
-    </script>
-
     <div class="admin-container">
         <div class="admin-header">
             <div class="admin-title"><i class="fas fa-crown"></i> BUBLDINGS STORE — Панель управления</div>
@@ -901,6 +1136,7 @@
         <div class="admin-tabs">
             <button class="admin-tab" data-tab="products">📦 Товары</button>
             <button class="admin-tab" data-tab="subcategories">📂 Категории</button>
+            <button class="admin-tab" data-tab="reviews">📝 Отзывы</button>
             <button class="admin-tab active" data-tab="stats">📊 Статистика</button>
             <button class="admin-tab" data-tab="orders">📋 Заказы</button>
         </div>
@@ -995,6 +1231,28 @@
             </div>
         </div>
 
+        <!-- Вкладка Отзывы (НОВАЯ) -->
+        <div id="reviews-tab" style="display: none;">
+            <div class="reviews-container">
+                <h2><i class="fas fa-comments"></i> Управление отзывами</h2>
+                <div class="review-filter">
+                    <input type="text" id="review-search-input" placeholder="🔍 Поиск по товару, пользователю или тексту...">
+                    <select id="review-rating-filter">
+                        <option value="all">⭐ Все оценки</option>
+                        <option value="5">★★★★★ (5)</option>
+                        <option value="4">★★★★☆ (4+)</option>
+                        <option value="3">★★★☆☆ (3+)</option>
+                        <option value="2">★★☆☆☆ (2+)</option>
+                        <option value="1">★☆☆☆☆ (1+)</option>
+                    </select>
+                    <button id="refresh-reviews" class="btn" style="padding: 10px 20px;"><i class="fas fa-sync-alt"></i> Обновить</button>
+                </div>
+                <div class="reviews-list-admin" id="reviews-list-container">
+                    <div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Загрузка отзывов...</div>
+                </div>
+            </div>
+        </div>
+
         <!-- Вкладка Статистика -->
         <div id="stats-tab">
             <div class="stats-container">
@@ -1050,7 +1308,7 @@
             </div>
         </div>
 
-        <!-- Вкладка Заказы (ОБНОВЛЕНА - с фильтрацией по статусу) -->
+        <!-- Вкладка Заказы -->
         <div id="orders-tab" style="display: none;">
             <div class="orders-container">
                 <h2><i class="fas fa-shopping-bag"></i> Заказы пользователей</h2>
@@ -1073,7 +1331,6 @@
                     </div>
                 </div>
 
-                <!-- Фильтры с иконками статусов -->
                 <div class="orders-filter">
                     <input type="text" id="search-orders" class="filter-input"
                         placeholder="🔍 Поиск по номеру заказа, имени или email...">
@@ -1100,6 +1357,38 @@
         </div>
     </div>
 
+    <!-- Модальное окно редактирования отзыва -->
+    <div id="review-edit-modal" class="review-modal">
+        <div class="review-modal-content">
+            <div class="review-modal-header">
+                <h3><i class="fas fa-edit"></i> Редактирование отзыва</h3>
+                <button class="review-modal-close" onclick="closeReviewModal()">&times;</button>
+            </div>
+            <form id="review-edit-form">
+                <input type="hidden" id="edit-review-id">
+                <input type="hidden" id="edit-product-id">
+                <div class="rating-input">
+                    <label>Оценка:</label>
+                    <div class="star-rating" id="edit-star-rating">
+                        <input type="radio" name="edit_rating" value="5" id="edit_star5"><label for="edit_star5">★</label>
+                        <input type="radio" name="edit_rating" value="4" id="edit_star4"><label for="edit_star4">★</label>
+                        <input type="radio" name="edit_rating" value="3" id="edit_star3"><label for="edit_star3">★</label>
+                        <input type="radio" name="edit_rating" value="2" id="edit_star2"><label for="edit_star2">★</label>
+                        <input type="radio" name="edit_rating" value="1" id="edit_star1"><label for="edit_star1">★</label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Текст отзыва:</label>
+                    <textarea id="edit-review-text" rows="4" placeholder="Текст отзыва..."></textarea>
+                </div>
+                <div class="modal-buttons" style="display: flex; gap: 15px; margin-top: 20px;">
+                    <button type="submit" class="btn" style="flex: 1;"><i class="fas fa-save"></i> Сохранить</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeReviewModal()" style="flex: 1;">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, addDoc, updateDoc, deleteDoc, doc, query, orderBy, where, Timestamp, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -1118,6 +1407,7 @@
         let salesChart, categoryChart, revenueTrendChart;
         let allOrders = [];
         let allProductsData = [];
+        let allReviewsData = [];
         let chartsInitialized = false;
         let currentStatusFilter = 'all';
 
@@ -1317,10 +1607,12 @@
                     const tabId = tab.dataset.tab;
                     document.getElementById('products-tab').style.display = tabId === 'products' ? 'grid' : 'none';
                     document.getElementById('subcategories-tab').style.display = tabId === 'subcategories' ? 'block' : 'none';
+                    document.getElementById('reviews-tab').style.display = tabId === 'reviews' ? 'block' : 'none';
                     document.getElementById('stats-tab').style.display = tabId === 'stats' ? 'block' : 'none';
                     document.getElementById('orders-tab').style.display = tabId === 'orders' ? 'block' : 'none';
                     if (tabId === 'products') await loadProducts();
                     if (tabId === 'subcategories') renderSubcategoriesManager();
+                    if (tabId === 'reviews') await loadAllReviewsForAdmin();
                     if (tabId === 'stats') {
                         if (!chartsInitialized) { initCharts(); chartsInitialized = true; }
                         await loadStats();
@@ -1338,6 +1630,199 @@
             categoryChart = new Chart(ctx2, { type: 'pie', data: { labels: [], datasets: [{ data: [], backgroundColor: ['#F2DD00', '#4CAF50', '#2196F3', '#FF9800', '#9C27B0', '#f44336', '#00BCD4', '#795548', '#E91E63'] }] }, options: { responsive: true, maintainAspectRatio: true } });
             revenueTrendChart = new Chart(ctx3, { type: 'line', data: { labels: [], datasets: [{ label: 'Выручка (₽)', data: [], borderColor: '#F2DD00', backgroundColor: 'rgba(242,221,0,0.1)', fill: true, tension: 0.3 }] }, options: { responsive: true, maintainAspectRatio: true } });
         }
+
+        // === ЗАГРУЗКА ВСЕХ ОТЗЫВОВ ДЛЯ АДМИНА ===
+        async function loadAllReviewsForAdmin() {
+            const container = document.getElementById('reviews-list-container');
+            if (!container) return;
+            container.innerHTML = '<div style="text-align:center;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Загрузка отзывов...</div>';
+            try {
+                const reviewsCollection = collection(db, "reviews");
+                const snapshot = await getDocs(reviewsCollection);
+                allReviewsData = [];
+                snapshot.forEach(docSnap => {
+                    const data = docSnap.data();
+                    allReviewsData.push({
+                        id: docSnap.id,
+                        productId: data.productId,
+                        productName: data.productName || 'Товар',
+                        userName: data.userName,
+                        rating: data.rating,
+                        text: data.text,
+                        createdAt: data.createdAt,
+                        date: data.date
+                    });
+                });
+                allReviewsData.sort((a, b) => {
+                    const dateA = a.createdAt ? a.createdAt.toDate?.() || new Date(a.date || 0) : new Date(a.date || 0);
+                    const dateB = b.createdAt ? b.createdAt.toDate?.() || new Date(b.date || 0) : new Date(b.date || 0);
+                    return dateB - dateA;
+                });
+                renderReviewsListAdmin();
+            } catch (error) {
+                console.error("Ошибка загрузки отзывов:", error);
+                container.innerHTML = '<div style="color:red;text-align:center;padding:40px;">❌ Ошибка загрузки отзывов</div>';
+            }
+        }
+
+        function renderReviewsListAdmin() {
+            const container = document.getElementById('reviews-list-container');
+            const searchTerm = document.getElementById('review-search-input')?.value.toLowerCase().trim() || '';
+            const ratingFilter = document.getElementById('review-rating-filter')?.value || 'all';
+            
+            let filtered = [...allReviewsData];
+            
+            if (searchTerm) {
+                filtered = filtered.filter(review =>
+                    review.productName?.toLowerCase().includes(searchTerm) ||
+                    review.userName?.toLowerCase().includes(searchTerm) ||
+                    review.text?.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            if (ratingFilter !== 'all') {
+                const minRating = parseInt(ratingFilter);
+                filtered = filtered.filter(review => review.rating >= minRating);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = `<div class="no-orders"><i class="fas fa-comment-slash"></i><p>Отзывы не найдены</p><p style="font-size:14px;color:#999;">Попробуйте изменить параметры поиска</p></div>`;
+                return;
+            }
+            
+            container.innerHTML = '';
+            filtered.forEach(review => {
+                const reviewDate = review.createdAt ? 
+                    (review.createdAt.toDate?.() ? review.createdAt.toDate().toLocaleString('ru-RU') : review.date || 'Дата неизвестна') : 
+                    (review.date || 'Дата неизвестна');
+                
+                const stars = renderStarsForReview(review.rating);
+                
+                const div = document.createElement('div');
+                div.className = 'review-card-admin';
+                div.innerHTML = `
+                    <div class="review-header-admin">
+                        <div class="review-product-info">
+                            <i class="fas fa-box"></i> ${escapeHtml(review.productName || 'Товар')}
+                            <span style="margin-left: 10px; font-size: 12px; color: #999;">ID: ${escapeHtml(review.productId?.slice(-8) || '---')}</span>
+                        </div>
+                        <div class="review-stars-admin">${stars}</div>
+                    </div>
+                    <div class="review-user">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="review-user-name">${escapeHtml(review.userName)}</span>
+                        <span class="review-date-admin">${escapeHtml(reviewDate)}</span>
+                    </div>
+                    <div class="review-text-admin">
+                        ${escapeHtml(review.text || 'Текст отзыва отсутствует')}
+                    </div>
+                    <div class="review-actions-admin">
+                        <button class="edit-review-btn" data-id="${review.id}" data-product-id="${review.productId}" data-rating="${review.rating}" data-text="${escapeHtml(review.text || '')}"><i class="fas fa-edit"></i> Редактировать</button>
+                        <button class="delete-review-btn" data-id="${review.id}" data-product-name="${escapeHtml(review.productName)}"><i class="fas fa-trash"></i> Удалить</button>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.querySelectorAll('.edit-review-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const reviewId = btn.dataset.id;
+                    const productId = btn.dataset.productId;
+                    const rating = parseInt(btn.dataset.rating);
+                    const text = btn.dataset.text;
+                    openReviewEditModal(reviewId, productId, rating, text);
+                });
+            });
+            
+            document.querySelectorAll('.delete-review-btn').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    const reviewId = btn.dataset.id;
+                    const productName = btn.dataset.productName;
+                    if (confirm(`Удалить отзыв пользователя на товар "${productName}"?`)) {
+                        await deleteReview(reviewId);
+                    }
+                });
+            });
+        }
+        
+        function renderStarsForReview(rating) {
+            let stars = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) stars += '<i class="fas fa-star"></i>';
+                else stars += '<i class="far fa-star"></i>';
+            }
+            return stars;
+        }
+        
+        async function deleteReview(reviewId) {
+            try {
+                await deleteDoc(doc(db, "reviews", reviewId));
+                alert('✅ Отзыв удален!');
+                await loadAllReviewsForAdmin();
+            } catch (error) {
+                console.error("Ошибка удаления отзыва:", error);
+                alert('❌ Ошибка при удалении отзыва');
+            }
+        }
+        
+        async function updateReview(reviewId, newRating, newText) {
+            try {
+                const reviewRef = doc(db, "reviews", reviewId);
+                await updateDoc(reviewRef, {
+                    rating: newRating,
+                    text: newText,
+                    updatedAt: Timestamp.now()
+                });
+                alert('✅ Отзыв обновлен!');
+                await loadAllReviewsForAdmin();
+                return true;
+            } catch (error) {
+                console.error("Ошибка обновления отзыва:", error);
+                alert('❌ Ошибка при обновлении отзыва');
+                return false;
+            }
+        }
+        
+        function openReviewEditModal(reviewId, productId, currentRating, currentText) {
+            const modal = document.getElementById('review-edit-modal');
+            document.getElementById('edit-review-id').value = reviewId;
+            document.getElementById('edit-product-id').value = productId;
+            document.getElementById('edit-review-text').value = currentText;
+            
+            // Устанавливаем радио-кнопки для рейтинга
+            const radios = document.querySelectorAll('input[name="edit_rating"]');
+            radios.forEach(radio => {
+                radio.checked = parseInt(radio.value) === currentRating;
+            });
+            
+            modal.classList.add('active');
+        }
+        
+        function closeReviewModal() {
+            document.getElementById('review-edit-modal').classList.remove('active');
+        }
+        
+        document.getElementById('review-edit-form')?.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const reviewId = document.getElementById('edit-review-id').value;
+            const selectedRating = document.querySelector('input[name="edit_rating"]:checked');
+            const newRating = selectedRating ? parseInt(selectedRating.value) : 5;
+            const newText = document.getElementById('edit-review-text').value.trim();
+            
+            if (!newText) {
+                alert('Введите текст отзыва');
+                return;
+            }
+            
+            await updateReview(reviewId, newRating, newText);
+            closeReviewModal();
+        });
+        
+        document.getElementById('review-search-input')?.addEventListener('input', () => renderReviewsListAdmin());
+        document.getElementById('review-rating-filter')?.addEventListener('change', () => renderReviewsListAdmin());
+        document.getElementById('refresh-reviews')?.addEventListener('click', async () => {
+            await loadAllReviewsForAdmin();
+        });
 
         // === ТОВАРЫ ===
         let editingId = null;
@@ -1472,8 +1957,6 @@
         document.getElementById('product-category').addEventListener('change', updateSubcategoryOptions);
 
         // === ЗАКАЗЫ С ФИЛЬТРАЦИЕЙ ПО СТАТУСУ ===
-
-        // Функция для обновления статуса заказа
         async function updateOrderStatus(orderId, newStatus) {
             try {
                 const orderRef = doc(db, "orders", orderId);
@@ -1546,12 +2029,10 @@
             const searchTerm = document.getElementById('search-orders').value.toLowerCase();
             let filtered = [...allOrders];
 
-            // Фильтр по статусу
             if (currentStatusFilter !== 'all') {
                 filtered = filtered.filter(o => o.status === currentStatusFilter);
             }
 
-            // Поиск по тексту
             if (searchTerm) {
                 filtered = filtered.filter(o =>
                     (o.orderNumber && o.orderNumber.toLowerCase().includes(searchTerm)) ||
@@ -1611,7 +2092,6 @@
                 container.appendChild(div);
             });
 
-            // Добавляем обработчики для кнопок смены статуса
             document.querySelectorAll('.status-change-btn').forEach(btn => {
                 btn.addEventListener('click', async (e) => {
                     if (btn.disabled) return;
@@ -1641,7 +2121,6 @@
             document.getElementById('avg-order-orders').textContent = Math.round(avg).toLocaleString() + ' ₽';
         }
 
-        // Настройка фильтров по статусу с иконками
         function setupStatusFilters() {
             const filterButtons = document.querySelectorAll('.status-filter-btn');
             filterButtons.forEach(btn => {
@@ -1784,6 +2263,9 @@
 
         function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
+        // Глобальные функции для модального окна
+        window.closeReviewModal = closeReviewModal;
+
         async function init() {
             await loadSubcategoriesFromFirestore();
             loadSubcategoriesFromStorage();
@@ -1800,5 +2282,7 @@
         init();
     </script>
 </body>
+
+</html>
 
 </html>
