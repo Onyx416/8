@@ -369,6 +369,85 @@
             margin-bottom: 20px;
         }
 
+        /* Стили для страницы запрета доступа - КОМПАКТНЫЕ КНОПКИ С МАЛЕНЬКИМИ ИКОНКАМИ */
+        .access-denied {
+            text-align: center;
+            padding: 50px 20px;
+            background: #fff;
+            border-radius: 20px;
+            border: 2px solid #f0f0f0;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .access-denied i {
+            font-size: 56px;
+            color: #ff4444;
+            margin-bottom: 18px;
+        }
+
+        .access-denied h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #000;
+        }
+
+        .access-denied p {
+            color: #666;
+            margin-bottom: 22px;
+            font-size: 14px;
+        }
+
+        .access-denied .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .access-denied .btn {
+            padding: 8px 18px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 30px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .access-denied .btn i {
+            font-size: 12px;
+            margin: 0;
+            color: currentColor;
+            display: inline-block;
+            line-height: 1;
+        }
+
+        .access-denied .btn-login {
+            background: #F2DD00;
+            border: 2px solid #000;
+            color: #000;
+        }
+
+        .access-denied .btn-login:hover {
+            background: #e6ce00;
+            transform: translateY(-2px);
+        }
+
+        .access-denied .btn-home {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            color: #333;
+        }
+
+        .access-denied .btn-home:hover {
+            border-color: #F2DD00;
+            transform: translateY(-2px);
+        }
+
         @media (max-width: 992px) {
             .checkout-grid {
                 grid-template-columns: 1fr;
@@ -376,7 +455,6 @@
         }
 
         @media (max-width: 768px) {
-
             .delivery-options,
             .payment-options {
                 grid-template-columns: 1fr;
@@ -384,6 +462,39 @@
 
             .form-row {
                 grid-template-columns: 1fr;
+            }
+            
+            .access-denied {
+                padding: 35px 15px;
+                max-width: 95%;
+            }
+            
+            .access-denied h2 {
+                font-size: 22px;
+            }
+            
+            .access-denied i {
+                font-size: 48px;
+            }
+            
+            .access-denied .btn {
+                padding: 7px 16px;
+                font-size: 12px;
+            }
+            
+            .access-denied .btn i {
+                font-size: 11px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .access-denied .btn-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .access-denied .btn {
+                justify-content: center;
             }
         }
     </style>
@@ -606,11 +717,33 @@
         let currentTotal = 0;
         let currentDeliveryCost = 0;
 
+        // Функция для отображения страницы с требованием авторизации
+        function showAccessDenied() {
+            const container = document.getElementById('checkout-container');
+            container.innerHTML = `
+                <div class="access-denied">
+                    <i class="fas fa-lock"></i>
+                    <h2>Требуется авторизация</h2>
+                    <p>Для оформления заказа необходимо войти в аккаунт или зарегистрироваться.</p>
+                    <div class="btn-group">
+                        <a href="auth.html" class="btn btn-login"><i class="fas fa-sign-in-alt"></i> Войти / Регистрация</a>
+                        <a href="cart.html" class="btn btn-home"><i class="fas fa-arrow-left"></i> Вернуться в корзину</a>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderCheckout() {
             const container = document.getElementById('checkout-container');
             const cart = getCart();
             const userData = getFullUserData();
             const isLoggedIn = userData !== null;
+
+            // ПРОВЕРКА: если пользователь не авторизован - показываем страницу с требованием входа
+            if (!isLoggedIn) {
+                showAccessDenied();
+                return;
+            }
 
             if (cart.length === 0) {
                 container.innerHTML = `<div style="text-align:center; padding:60px;"><i class="fas fa-shopping-cart" style="font-size:64px;color:#ccc;"></i><h2>Корзина пуста</h2><p>Добавьте товары перед оформлением заказа</p><a href="index.html" class="submit-order-btn" style="display:inline-block; text-decoration:none;">Вернуться к покупкам</a></div>`;
@@ -623,7 +756,6 @@
             container.innerHTML = `
                 <div class="checkout-grid">
                     <div class="checkout-form">
-                        ${isLoggedIn ? `
                         <div class="checkout-form-section">
                             <div class="section-header"><div class="section-number">1</div><div class="section-title">Данные получателя</div></div>
                             <div class="user-info-card">
@@ -634,14 +766,6 @@
                                 <a href="profile.html" class="edit-profile-link"><i class="fas fa-edit"></i> Редактировать профиль</a>
                             </div>
                         </div>
-                        ` : `
-                        <div class="checkout-form-section">
-                            <div class="section-header"><div class="section-number">1</div><div class="section-title">Данные получателя</div></div>
-                            <div class="login-prompt"><i class="fas fa-info-circle"></i> <a href="auth.html">Войдите</a> или <a href="auth.html">зарегистрируйтесь</a>, чтобы заказы сохранялись в историю</div>
-                            <div class="form-row"><div class="form-group"><label>ФИО *</label><input type="text" id="fullname" placeholder="Иванов Иван Иванович" required></div><div class="form-group"><label>Телефон *</label><input type="tel" id="phone" placeholder="+7 (___) ___-__-__" required></div></div>
-                            <div class="form-group"><label>Email *</label><input type="email" id="email" placeholder="example@mail.ru" required></div>
-                        </div>
-                        `}
                         <div class="checkout-form-section">
                             <div class="section-header"><div class="section-number">2</div><div class="section-title">Способ получения</div></div>
                             <div class="delivery-options">
@@ -694,9 +818,6 @@
                 });
             });
 
-            const phoneInput = document.getElementById('phone');
-            if (phoneInput) phoneInput.addEventListener('input', formatPhone);
-
             document.getElementById('submit-order-btn').addEventListener('click', submitOrder);
         }
 
@@ -726,6 +847,7 @@
             e.target.value = formatted;
         }
 
+        // ИСПРАВЛЕННАЯ ФУНКЦИЯ submitOrder - С КАТЕГОРИЕЙ ТОВАРА
         async function submitOrder() {
             const cart = getCart();
             if (cart.length === 0) {
@@ -733,24 +855,28 @@
                 return;
             }
 
-            const isLoggedIn = getFullUserData() !== null;
+            // ПРОВЕРКА: если пользователь не авторизован - показываем предупреждение и перенаправляем
             const currentUser = getCurrentUser();
-            const userId = currentUser ? currentUser.id : null;
-            let customerData;
-
-            if (isLoggedIn) {
-                const userData = getFullUserData();
-                customerData = { name: userData.name, phone: userData.phone || 'Не указан', email: userData.email };
-            } else {
-                const fullname = document.getElementById('fullname')?.value.trim();
-                const phone = document.getElementById('phone')?.value.trim();
-                const email = document.getElementById('email')?.value.trim();
-
-                if (!fullname) { alert('Пожалуйста, введите ФИО'); return; }
-                if (!phone) { alert('Пожалуйста, введите телефон'); return; }
-                if (!email) { alert('Пожалуйста, введите email'); return; }
-                customerData = { name: fullname, phone: phone, email: email };
+            if (!currentUser) {
+                alert('Для оформления заказа необходимо войти в аккаунт!');
+                window.location.href = 'auth.html';
+                return;
             }
+
+            const userId = currentUser.id;
+            const userData = getFullUserData();
+            
+            if (!userData) {
+                alert('Ошибка: данные пользователя не найдены. Пожалуйста, войдите снова.');
+                window.location.href = 'auth.html';
+                return;
+            }
+
+            const customerData = {
+                name: userData.name,
+                phone: userData.phone || 'Не указан',
+                email: userData.email
+            };
 
             const selectedDelivery = document.querySelector('.delivery-option.selected');
             const deliveryMethod = selectedDelivery?.querySelector('.option-title')?.textContent || 'Самовывоз';
@@ -763,14 +889,22 @@
             const paymentMethod = selectedPayment?.querySelector('.payment-title')?.textContent || 'Оплата онлайн';
             const totalWithDelivery = currentTotal + deliveryCost;
 
+            // ИСПРАВЛЕННОЕ ФОРМИРОВАНИЕ items - С КАТЕГОРИЕЙ
             const orderData = {
                 orderNumber: 'ORD-' + Date.now(),
                 date: new Date().toLocaleString('ru-RU'),
-                userId: userId,  // ← ПРИВЯЗКА К ПОЛЬЗОВАТЕЛЮ
+                userId: userId,
                 customer: customerData,
                 delivery: { method: deliveryMethod, address: address || 'Не указан', cost: deliveryCost },
                 payment: { method: paymentMethod, status: 'pending' },
-                items: cart.map(item => ({ id: item.id, name: item.name, price: item.price, quantity: item.quantity, total: item.price * item.quantity })),
+                items: cart.map(item => ({ 
+                    id: item.id, 
+                    name: item.name, 
+                    price: item.price, 
+                    quantity: item.quantity, 
+                    total: item.price * item.quantity,
+                    category: item.category || 'Другое'  // ← КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ
+                })),
                 subtotal: currentTotal,
                 deliveryCost: deliveryCost,
                 total: totalWithDelivery,
@@ -795,8 +929,8 @@
                         <p>Номер заказа: <strong>${orderData.orderNumber}</strong></p>
                         <p>Сумма заказа: ${totalWithDelivery.toLocaleString()} ₽</p>
                         <p>Детали отправлены на почту ${customerData.email}</p>
-                        <p>${userId ? '✅ Заказ сохранен в вашей истории' : 'ℹ️ Для сохранения истории заказов войдите в аккаунт'}</p>
                         <a href="index.html" class="submit-order-btn" style="display:inline-block; text-decoration:none; margin-top:20px;">Вернуться на главную</a>
+                        <a href="profile.html" class="submit-order-btn" style="display:inline-block; text-decoration:none; margin-top:20px; background:#fff;">Перейти в профиль</a>
                     </div>
                 `;
                 updateCartCounterInHeader();
@@ -848,8 +982,19 @@
             }
         }
 
+        // Функция для проверки авторизации при загрузке страницы
+        function checkAuthAndRender() {
+            const isLoggedIn = getCurrentUser() !== null;
+            
+            if (!isLoggedIn) {
+                showAccessDenied();
+            } else {
+                renderCheckout();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
-            renderCheckout();
+            checkAuthAndRender();
             updateUserStatusInHeader();
             setupSearch();
             updateAdminButtonVisibility();
