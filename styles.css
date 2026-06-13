@@ -207,7 +207,7 @@ header {
     gap: 25px;
 }
 
-/* Обновленные стили для карточек товаров */
+/* Product Card Styles */
 .product-card {
     border: 2px solid #000;
     border-radius: 16px;
@@ -227,8 +227,9 @@ header {
     border-color: #F2DD00;
 }
 
-/* Фиксированный размер изображения */
+/* Fixed image size */
 .product-image {
+    position: relative;
     width: 100%;
     height: 180px;
     background-color: #f8f8f8;
@@ -238,7 +239,6 @@ header {
     justify-content: center;
     overflow: hidden;
     margin-bottom: 12px;
-    position: relative;
 }
 
 .product-image img {
@@ -248,13 +248,40 @@ header {
     object-position: center;
     transition: transform 0.4s ease;
     background-color: #f8f8f8;
+    pointer-events: none;
 }
 
 .product-card:hover .product-image img {
     transform: scale(1.05);
 }
 
-/* Бренд товара */
+/* Wishlist button styles */
+.wishlist-btn {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 2px solid #e0e0e0;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 20;
+    font-size: 16px;
+    color: #ff4444;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.wishlist-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* Product brand */
 .product-brand {
     font-size: 11px;
     color: #000;
@@ -272,7 +299,7 @@ header {
     width: fit-content;
 }
 
-/* Название товара - с обрезкой для главной страницы */
+/* Product title */
 .product-title {
     font-size: 14px;
     font-weight: 700;
@@ -288,7 +315,7 @@ header {
     min-height: 36px;
 }
 
-/* Рейтинг */
+/* Rating */
 .product-rating {
     display: flex;
     align-items: center;
@@ -316,7 +343,7 @@ header {
     font-size: 11px;
 }
 
-/* Цена товара */
+/* Product price */
 .product-price {
     font-size: 18px;
     font-weight: 800;
@@ -325,7 +352,7 @@ header {
     font-family: 'Montserrat', 'Inter', sans-serif;
 }
 
-/* Кнопка "В корзину" */
+/* Add to cart button */
 .add-to-cart {
     background-color: #F2DD00;
     border: 2px solid #000;
@@ -569,6 +596,39 @@ footer {
     transform: translateY(-2px);
 }
 
+/* Wishlist button on product page */
+.btn-wishlist {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 15px 25px;
+    border-radius: 50px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    background: #fff;
+    border: 2px solid #e0e0e0;
+    color: #ff4444;
+}
+
+.btn-wishlist:hover {
+    transform: translateY(-2px);
+    border-color: #ff4444;
+    background: #fff5f5;
+}
+
+.btn-wishlist.active {
+    background: #ff4444;
+    color: white;
+    border-color: #ff4444;
+}
+
+.btn-wishlist.active i {
+    color: white;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
     .products-grid {
@@ -646,6 +706,14 @@ footer {
         width: 100%;
         justify-content: space-between;
     }
+
+    .wishlist-btn {
+        width: 28px;
+        height: 28px;
+        font-size: 14px;
+        top: 6px;
+        right: 6px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -706,15 +774,22 @@ footer {
         font-size: 12px;
         padding: 8px 12px;
     }
+
+    .wishlist-btn {
+        width: 26px;
+        height: 26px;
+        font-size: 12px;
+        top: 5px;
+        right: 5px;
+    }
 }
 
-/* Анимации */
+/* Animations */
 @keyframes slideIn {
     from {
         transform: translateX(100%);
         opacity: 0;
     }
-
     to {
         transform: translateX(0);
         opacity: 1;
