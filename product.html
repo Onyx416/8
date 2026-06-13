@@ -88,16 +88,11 @@
             gap: 20px;
         }
 
-        /* Полное название на странице товара - без обрезки */
         .product-info .product-title {
             font-size: 28px;
             font-weight: bold;
             margin: 0;
             line-height: 1.3;
-            display: block;
-            overflow: visible;
-            -webkit-line-clamp: unset;
-            min-height: auto;
         }
 
         .product-price {
@@ -121,9 +116,6 @@
 
         .product-category i {
             color: #F2DD00;
-            font-size: 14px;
-            width: 16px;
-            text-align: center;
         }
 
         .product-description {
@@ -156,11 +148,6 @@
             gap: 10px;
         }
 
-        .specs-title i {
-            width: 22px;
-            text-align: center;
-        }
-
         .specs-list {
             display: flex;
             flex-direction: column;
@@ -185,8 +172,6 @@
         }
 
         .spec-label i {
-            width: 20px;
-            text-align: center;
             color: #F2DD00;
         }
 
@@ -199,6 +184,7 @@
             display: flex;
             gap: 15px;
             margin-top: 10px;
+            flex-wrap: wrap;
         }
 
         .btn {
@@ -234,6 +220,28 @@
             transform: translateY(-2px);
         }
 
+        .btn-wishlist {
+            background: #fff;
+            border: 2px solid #e0e0e0;
+            color: #ff4444;
+        }
+
+        .btn-wishlist:hover {
+            transform: translateY(-2px);
+            border-color: #ff4444;
+            background: #fff5f5;
+        }
+
+        .btn-wishlist.active {
+            background: #ff4444;
+            color: white;
+            border-color: #ff4444;
+        }
+
+        .btn-wishlist.active i {
+            color: white;
+        }
+
         .reviews-section {
             margin-top: 50px;
             padding: 30px;
@@ -261,11 +269,6 @@
             gap: 10px;
         }
 
-        .reviews-title i {
-            width: 28px;
-            text-align: center;
-        }
-
         .rating-summary {
             display: flex;
             align-items: center;
@@ -285,13 +288,9 @@
             letter-spacing: 2px;
         }
 
-        .stars-large i {
-            width: 20px;
-            text-align: center;
-        }
-
         .review-count {
             color: #666;
+            font-size: 14px;
         }
 
         .write-review-btn {
@@ -305,11 +304,6 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-        }
-
-        .write-review-btn i {
-            width: 16px;
-            text-align: center;
         }
 
         .write-review-btn:hover {
@@ -392,11 +386,6 @@
             gap: 8px;
         }
 
-        .submit-review-btn i {
-            width: 16px;
-            text-align: center;
-        }
-
         .submit-review-btn:hover {
             background: #e6ce00;
             transform: translateY(-2px);
@@ -435,19 +424,12 @@
         }
 
         .reviewer-name i {
-            width: 18px;
-            text-align: center;
             color: #F2DD00;
         }
 
         .review-stars {
             color: #FFB800;
             font-size: 14px;
-        }
-
-        .review-stars i {
-            width: 14px;
-            text-align: center;
         }
 
         .review-date {
@@ -477,7 +459,6 @@
             .product-container {
                 gap: 30px;
             }
-
             .main-image-container {
                 height: 350px;
             }
@@ -488,41 +469,32 @@
                 grid-template-columns: 1fr;
                 gap: 25px;
             }
-
             .product-gallery {
                 position: static;
             }
-
             .main-image-container {
                 height: 300px;
             }
-
             .product-info .product-title {
                 font-size: 24px;
             }
-
             .product-price {
                 font-size: 28px;
             }
-
             .action-buttons {
                 flex-direction: column;
             }
-
             .btn {
                 padding: 12px 20px;
             }
-
             .spec-item {
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 5px;
             }
-
             .spec-label {
                 width: auto;
             }
-
             .reviews-header {
                 flex-direction: column;
                 align-items: flex-start;
@@ -533,29 +505,23 @@
             .main-image-container {
                 height: 250px;
             }
-
             .product-info .product-title {
                 font-size: 20px;
             }
-
             .product-price {
                 font-size: 24px;
             }
-
             .product-description {
                 font-size: 14px;
                 padding: 15px;
             }
-
             .btn {
                 padding: 10px 16px;
                 font-size: 14px;
             }
-
             .reviews-section {
                 padding: 20px;
             }
-
             .reviews-title {
                 font-size: 20px;
             }
@@ -665,7 +631,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, getDoc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
@@ -736,60 +702,123 @@
             }
         }
 
+        // ========== ФУНКЦИИ ДЛЯ ИЗБРАННОГО ==========
+
+        function getWishlistStorageKey() {
+            const currentUser = getCurrentUser();
+            if (currentUser && currentUser.id) return `wishlist_${currentUser.id}`;
+            return 'wishlist_guest';
+        }
+
+        function getWishlist() {
+            const key = getWishlistStorageKey();
+            const wishlist = localStorage.getItem(key);
+            return wishlist ? JSON.parse(wishlist) : [];
+        }
+
+        function saveWishlist(wishlist) {
+            const key = getWishlistStorageKey();
+            localStorage.setItem(key, JSON.stringify(wishlist));
+            updateWishlistCounter();
+        }
+
+        function isInWishlist(productId) {
+            const wishlist = getWishlist();
+            return wishlist.some(item => item.id === productId);
+        }
+
+        function updateWishlistCounter() {
+            const wishlist = getWishlist();
+            const totalItems = wishlist.length;
+            const counter = document.querySelector('.wishlist-counter');
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
+        }
+
+        function updateWishlistButton(productId, button) {
+            if (isInWishlist(productId)) {
+                button.innerHTML = '<i class="fas fa-heart"></i> В избранном';
+                button.classList.add('active');
+            } else {
+                button.innerHTML = '<i class="far fa-heart"></i> В избранное';
+                button.classList.remove('active');
+            }
+        }
+
+        function toggleWishlistPage(productId, productName, productPrice, productImage, button) {
+            let wishlist = getWishlist();
+            const existingIndex = wishlist.findIndex(item => item.id === productId);
+            
+            if (existingIndex !== -1) {
+                wishlist.splice(existingIndex, 1);
+                saveWishlist(wishlist);
+                button.innerHTML = '<i class="far fa-heart"></i> В избранное';
+                button.classList.remove('active');
+                showNotification(`❌ ${productName} удален из избранного`, '#ff4444');
+            } else {
+                wishlist.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    image: productImage
+                });
+                saveWishlist(wishlist);
+                button.innerHTML = '<i class="fas fa-heart"></i> В избранном';
+                button.classList.add('active');
+                showNotification(`❤️ ${productName} добавлен в избранное`, '#4CAF50');
+            }
+            updateWishlistCounter();
+        }
+
+        // ========== ФУНКЦИИ ДЛЯ ОТЗЫВОВ ==========
+        
         async function getProductReviews(productId) {
             try {
                 console.log("🔍 Загружаем отзывы для товара:", productId);
+                
                 const reviewsCollection = collection(db, "reviews");
                 const q = query(reviewsCollection, where("productId", "==", productId));
                 const snapshot = await getDocs(q);
+                
                 const reviews = [];
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
-                    console.log("📝 Найден отзыв:", data);
                     reviews.push({
                         id: docSnap.id,
-                        ...data,
-                        dateFormatted: data.createdAt ? data.createdAt.toDate().toLocaleString('ru-RU') : data.date || new Date().toLocaleString('ru-RU')
+                        rating: data.rating,
+                        text: data.text,
+                        userName: data.userName,
+                        createdAt: data.createdAt,
+                        date: data.date,
+                        dateFormatted: data.createdAt ? 
+                            data.createdAt.toDate().toLocaleString('ru-RU') : 
+                            data.date || new Date().toLocaleString('ru-RU')
                     });
                 });
-                reviews.sort((a, b) => {
-                    const dateA = a.createdAt ? a.createdAt.toDate() : new Date(a.date || 0);
-                    const dateB = b.createdAt ? b.createdAt.toDate() : new Date(b.date || 0);
-                    return dateB - dateA;
-                });
-                console.log(`✅ Загружено ${reviews.length} отзывов`);
+                
+                console.log(`✅ Загружено ${reviews.length} отзывов для товара ${productId}`);
                 return reviews;
+                
             } catch (error) {
                 console.error("❌ Ошибка загрузки отзывов:", error);
                 return [];
             }
         }
 
-        async function addReviewToFirestore(productId, productName, rating, text, userName) {
-            try {
-                console.log("💾 Сохраняем отзыв в Firestore...");
-                const reviewsCollection = collection(db, "reviews");
-                const docRef = await addDoc(reviewsCollection, {
-                    productId: productId,
-                    productName: productName,
-                    userName: userName,
-                    rating: parseInt(rating),
-                    text: text,
-                    createdAt: Timestamp.now(),
-                    date: new Date().toISOString()
-                });
-                console.log("✅ Отзыв сохранен в Firestore с ID:", docRef.id);
-                return true;
-            } catch (error) {
-                console.error("❌ Ошибка сохранения отзыва:", error);
-                return false;
-            }
-        }
-
         function getAverageRating(reviews) {
             if (reviews.length === 0) return 0;
             const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-            return (sum / reviews.length).toFixed(1);
+            const average = sum / reviews.length;
+            return Math.round(average * 10) / 10;
+        }
+
+        function getReviewWord(count) {
+            if (count === 0) return 'Нет отзывов';
+            if (count === 1) return '1 отзыв';
+            if (count >= 2 && count <= 4) return `${count} отзыва`;
+            return `${count} отзывов`;
         }
 
         function renderStars(rating, isLarge = false) {
@@ -801,6 +830,25 @@
             const emptyStars = 5 - Math.ceil(rating);
             for (let i = 0; i < emptyStars; i++) stars += '<i class="far fa-star"></i>';
             return stars;
+        }
+
+        async function addReviewToFirestore(productId, productName, rating, text, userName) {
+            try {
+                const reviewsCollection = collection(db, "reviews");
+                await addDoc(reviewsCollection, {
+                    productId: productId,
+                    productName: productName,
+                    userName: userName,
+                    rating: parseInt(rating),
+                    text: text,
+                    createdAt: Timestamp.now(),
+                    date: new Date().toISOString()
+                });
+                return true;
+            } catch (error) {
+                console.error("Ошибка сохранения отзыва:", error);
+                return false;
+            }
         }
 
         function renderSpecs(product) {
@@ -819,14 +867,101 @@
         function addToCart(product) {
             let cart = getCart();
             const existing = cart.find(item => item.id === product.id);
-            if (existing) { existing.quantity += 1; }
-            else { cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.imageUrl || 'images/default-product.jpg' }); }
+            if (existing) { 
+                existing.quantity += 1; 
+            } else { 
+                cart.push({ 
+                    id: product.id, 
+                    name: product.name, 
+                    price: product.price, 
+                    quantity: 1, 
+                    image: product.imageUrl || 'images/default-product.jpg', 
+                    category: product.category || 'Другое' 
+                }); 
+            }
             saveCart(cart);
             showNotification(`✅ ${product.name} добавлен в корзину!`, '#4CAF50');
         }
 
         let currentProduct = null;
         let currentReviews = [];
+
+        function renderReviewsList(reviews) {
+            if (!reviews || reviews.length === 0) {
+                return `<div class="no-reviews"><i class="fas fa-comment-dots"></i><p>Нет отзывов. Будьте первым, кто оценит этот товар!</p></div>`;
+            }
+            return reviews.map(review => `
+                <div class="review-card">
+                    <div class="review-header">
+                        <div class="reviewer-name"><i class="fas fa-user-circle"></i> ${escapeHtml(review.userName)}</div>
+                        <div class="review-stars">${renderStars(review.rating)}</div>
+                        <div class="review-date">${review.dateFormatted || formatDate(review.date)}</div>
+                    </div>
+                    <div class="review-text">${escapeHtml(review.text)}</div>
+                </div>
+            `).join('');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'Недавно';
+            try {
+                const date = new Date(dateString);
+                if (isNaN(date.getTime())) return 'Недавно';
+                return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
+            } catch (e) {
+                return 'Недавно';
+            }
+        }
+
+        async function submitReview(productId, productName) {
+            const selectedRating = document.querySelector('input[name="rating"]:checked');
+            if (!selectedRating) {
+                showNotification('Пожалуйста, поставьте оценку товару', '#ff4444');
+                return;
+            }
+            const reviewText = document.getElementById('review-text').value.trim();
+            if (!reviewText) {
+                showNotification('Пожалуйста, напишите текст отзыва', '#ff4444');
+                return;
+            }
+            const rating = selectedRating.value;
+            const currentUser = getCurrentUser();
+            if (!currentUser) {
+                showNotification('Пожалуйста, войдите в аккаунт', '#ff4444');
+                setTimeout(() => window.location.href = 'auth.html', 1500);
+                return;
+            }
+
+            const success = await addReviewToFirestore(productId, productName, rating, reviewText, currentUser.name);
+
+            if (success) {
+                showNotification('✅ Спасибо за ваш отзыв!', '#4CAF50');
+                document.getElementById('review-form').classList.remove('show');
+                if (document.querySelector('input[name="rating"]:checked')) {
+                    document.querySelector('input[name="rating"]:checked').checked = false;
+                }
+                document.getElementById('review-text').value = '';
+                
+                currentReviews = await getProductReviews(productId);
+                
+                const reviewsList = document.getElementById('reviews-list');
+                if (reviewsList) {
+                    reviewsList.innerHTML = renderReviewsList(currentReviews);
+                }
+
+                const avgRating = getAverageRating(currentReviews);
+                const ratingSummary = document.querySelector('.rating-summary');
+                if (ratingSummary) {
+                    ratingSummary.innerHTML = `
+                        <div class="average-rating">${avgRating}</div>
+                        <div class="stars-large">${renderStars(avgRating, true)}</div>
+                        <div class="review-count">${getReviewWord(currentReviews.length)}</div>
+                    `;
+                }
+            } else {
+                showNotification('❌ Ошибка при сохранении отзыва. Попробуйте позже.', '#ff4444');
+            }
+        }
 
         async function loadProduct() {
             const urlParams = new URLSearchParams(window.location.search);
@@ -871,16 +1006,20 @@
                             <div class="product-category"><i class="fas fa-tag"></i> ${escapeHtml(product.category || 'Без категории')}</div>
                             <div class="product-description">${escapeHtml(product.description || 'Описание отсутствует')}</div>
                             <div class="product-specs"><div class="specs-title"><i class="fas fa-cog"></i> Характеристики</div><div class="specs-list" id="product-specs"></div></div>
-                            <div class="action-buttons"><button class="btn btn-buy" id="buy-btn"><i class="fas fa-bolt"></i> Купить сейчас</button><button class="btn btn-cart" id="cart-btn"><i class="fas fa-shopping-cart"></i> В корзину</button></div>
+                            <div class="action-buttons">
+                                <button class="btn btn-buy" id="buy-btn"><i class="fas fa-bolt"></i> Купить сейчас</button>
+                                <button class="btn btn-cart" id="cart-btn"><i class="fas fa-shopping-cart"></i> В корзину</button>
+                                <button class="btn btn-wishlist" id="wishlist-page-btn"><i class="far fa-heart"></i> В избранное</button>
+                            </div>
                         </div>
                     </div>
                     <div class="reviews-section">
                         <div class="reviews-header">
                             <div class="reviews-title"><i class="fas fa-comments"></i> Отзывы покупателей</div>
-                            <div class="rating-summary">
+                            <div class="rating-summary" id="rating-summary">
                                 <div class="average-rating">${avgRating}</div>
                                 <div class="stars-large">${renderStars(avgRating, true)}</div>
-                                <div class="review-count" id="review-count-display">${currentReviews.length} ${getReviewWord(currentReviews.length)}</div>
+                                <div class="review-count" id="review-count-display">${getReviewWord(currentReviews.length)}</div>
                             </div>
                             <button class="write-review-btn" id="write-review-btn"><i class="fas fa-pen"></i> Написать отзыв</button>
                         </div>
@@ -906,6 +1045,12 @@
                 renderSpecs(product);
                 document.getElementById('buy-btn').onclick = () => { addToCart(product); setTimeout(() => window.location.href = 'checkout.html', 500); };
                 document.getElementById('cart-btn').onclick = () => addToCart(product);
+                
+                const wishlistPageBtn = document.getElementById('wishlist-page-btn');
+                if (wishlistPageBtn) {
+                    updateWishlistButton(product.id, wishlistPageBtn);
+                    wishlistPageBtn.onclick = () => toggleWishlistPage(product.id, product.name, product.price, product.imageUrl, wishlistPageBtn);
+                }
 
                 const writeReviewBtn = document.getElementById('write-review-btn');
                 const reviewForm = document.getElementById('review-form');
@@ -926,93 +1071,6 @@
             } catch (error) {
                 console.error(error);
                 document.getElementById('product-content').innerHTML = '<div class="error">❌ Ошибка загрузки товара</div>';
-            }
-        }
-
-        function renderReviewsList(reviews) {
-            if (!reviews || reviews.length === 0) {
-                return `<div class="no-reviews"><i class="fas fa-comment-dots"></i><p>Нет отзывов. Будьте первым, кто оценит этот товар!</p></div>`;
-            }
-            return reviews.map(review => `
-                <div class="review-card">
-                    <div class="review-header">
-                        <div class="reviewer-name"><i class="fas fa-user-circle"></i> ${escapeHtml(review.userName)}</div>
-                        <div class="review-stars">${renderStars(review.rating)}</div>
-                        <div class="review-date">${review.dateFormatted || formatDate(review.date)}</div>
-                    </div>
-                    <div class="review-text">${escapeHtml(review.text)}</div>
-                </div>
-            `).join('');
-        }
-
-        function formatDate(dateString) {
-            if (!dateString) return 'Недавно';
-            try {
-                const date = new Date(dateString);
-                if (isNaN(date.getTime())) return 'Недавно';
-                return date.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' });
-            } catch (e) {
-                return 'Недавно';
-            }
-        }
-
-        function getReviewWord(count) {
-            if (count % 10 === 1 && count % 100 !== 11) return `${count} отзыв`;
-            if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) return `${count} отзыва`;
-            return `${count} отзывов`;
-        }
-
-        async function submitReview(productId, productName) {
-            const selectedRating = document.querySelector('input[name="rating"]:checked');
-            if (!selectedRating) {
-                showNotification('Пожалуйста, поставьте оценку товару', '#ff4444');
-                return;
-            }
-            const reviewText = document.getElementById('review-text').value.trim();
-            if (!reviewText) {
-                showNotification('Пожалуйста, напишите текст отзыва', '#ff4444');
-                return;
-            }
-            const rating = selectedRating.value;
-            const currentUser = getCurrentUser();
-            if (!currentUser) {
-                showNotification('Пожалуйста, войдите в аккаунт', '#ff4444');
-                setTimeout(() => window.location.href = 'auth.html', 1500);
-                return;
-            }
-
-            console.log("📝 Отправка отзыва:", { productId, productName, rating, reviewText, userName: currentUser.name });
-
-            const success = await addReviewToFirestore(productId, productName, rating, reviewText, currentUser.name);
-
-            if (success) {
-                showNotification('✅ Спасибо за ваш отзыв!', '#4CAF50');
-                document.getElementById('review-form').classList.remove('show');
-                if (document.querySelector('input[name="rating"]:checked')) {
-                    document.querySelector('input[name="rating"]:checked').checked = false;
-                }
-                document.getElementById('review-text').value = '';
-
-                console.log("🔄 Перезагружаем отзывы...");
-                currentReviews = await getProductReviews(productId);
-                console.log(`📋 Загружено ${currentReviews.length} отзывов после добавления`);
-
-                const reviewsList = document.getElementById('reviews-list');
-                if (reviewsList) {
-                    reviewsList.innerHTML = renderReviewsList(currentReviews);
-                }
-
-                const avgRating = getAverageRating(currentReviews);
-                const ratingSummary = document.querySelector('.rating-summary');
-                if (ratingSummary) {
-                    ratingSummary.innerHTML = `
-                        <div class="average-rating">${avgRating}</div>
-                        <div class="stars-large">${renderStars(avgRating, true)}</div>
-                        <div class="review-count" id="review-count-display">${currentReviews.length} ${getReviewWord(currentReviews.length)}</div>
-                    `;
-                }
-            } else {
-                showNotification('❌ Ошибка при сохранении отзыва. Попробуйте позже.', '#ff4444');
             }
         }
 
@@ -1064,10 +1122,10 @@
             updateUserStatus();
             setupSearch();
             updateAdminButtonVisibility();
+            updateWishlistCounter();
         });
     </script>
     <script>
-        // === НАВИГАЦИЯ ПО КАТЕГОРИЯМ ===
         function setupCategoryNavigation() {
             document.querySelectorAll('.category-nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -1083,7 +1141,6 @@
                 });
             });
         }
-
         document.addEventListener('DOMContentLoaded', () => {
             setupCategoryNavigation();
         });
