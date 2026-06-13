@@ -1231,7 +1231,7 @@
             </div>
         </div>
 
-        <!-- Вкладка Отзывы (НОВАЯ) -->
+        <!-- Вкладка Отзывы -->
         <div id="reviews-tab" style="display: none;">
             <div class="reviews-container">
                 <h2><i class="fas fa-comments"></i> Управление отзывами</h2>
@@ -1789,7 +1789,6 @@
             document.getElementById('edit-product-id').value = productId;
             document.getElementById('edit-review-text').value = currentText;
             
-            // Устанавливаем радио-кнопки для рейтинга
             const radios = document.querySelectorAll('input[name="edit_rating"]');
             radios.forEach(radio => {
                 radio.checked = parseInt(radio.value) === currentRating;
