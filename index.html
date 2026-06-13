@@ -151,7 +151,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, query, where, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
@@ -254,6 +254,59 @@
             }
         }
 
+        // ========== ФУНКЦИИ ДЛЯ ИЗБРАННОГО ==========
+
+        function getWishlistStorageKey() {
+            const currentUser = getCurrentUser();
+            if (currentUser && currentUser.id) return `wishlist_${currentUser.id}`;
+            return 'wishlist_guest';
+        }
+
+        function getWishlist() {
+            const key = getWishlistStorageKey();
+            const wishlist = localStorage.getItem(key);
+            return wishlist ? JSON.parse(wishlist) : [];
+        }
+
+        function saveWishlist(wishlist) {
+            const key = getWishlistStorageKey();
+            localStorage.setItem(key, JSON.stringify(wishlist));
+            updateWishlistCounter();
+        }
+
+        function isInWishlist(productId) {
+            const wishlist = getWishlist();
+            return wishlist.some(item => item.id === productId);
+        }
+
+        function toggleWishlist(productId, productName, productPrice, productImage, buttonElement) {
+            let wishlist = getWishlist();
+            const existingIndex = wishlist.findIndex(item => item.id === productId);
+            
+            if (existingIndex !== -1) {
+                wishlist.splice(existingIndex, 1);
+                saveWishlist(wishlist);
+                buttonElement.innerHTML = '<i class="far fa-heart"></i>';
+                buttonElement.style.background = 'rgba(255,255,255,0.95)';
+                buttonElement.style.color = '#ff4444';
+                buttonElement.style.borderColor = '#e0e0e0';
+                showNotification(`❌ ${productName} удален из избранного`, '#ff4444');
+            } else {
+                wishlist.push({
+                    id: productId,
+                    name: productName,
+                    price: productPrice,
+                    image: productImage
+                });
+                saveWishlist(wishlist);
+                buttonElement.innerHTML = '<i class="fas fa-heart"></i>';
+                buttonElement.style.background = '#ff4444';
+                buttonElement.style.color = 'white';
+                buttonElement.style.borderColor = '#ff4444';
+                showNotification(`❤️ ${productName} добавлен в избранное`, '#4CAF50');
+            }
+        }
+
         // === ОТЗЫВЫ ИЗ FIRESTORE ===
         let allReviewsCache = {};
 
@@ -262,32 +315,44 @@
                 console.log("🔄 Загружаем все отзывы из Firestore...");
                 const reviewsCollection = collection(db, "reviews");
                 const snapshot = await getDocs(reviewsCollection);
+                
                 allReviewsCache = {};
+                
                 snapshot.forEach(docSnap => {
                     const data = docSnap.data();
                     const productId = data.productId;
+                    const uniqueKey = `${data.userName}_${(data.text || '').substring(0, 100)}_${data.rating}`;
+                    
                     if (!allReviewsCache[productId]) {
-                        allReviewsCache[productId] = [];
+                        allReviewsCache[productId] = new Map();
                     }
-                    allReviewsCache[productId].push({
-                        rating: data.rating,
-                        text: data.text,
-                        userName: data.userName,
-                        createdAt: data.createdAt,
-                        date: data.date
-                    });
+                    
+                    if (!allReviewsCache[productId].has(uniqueKey)) {
+                        allReviewsCache[productId].set(uniqueKey, {
+                            rating: data.rating,
+                            text: data.text,
+                            userName: data.userName,
+                            createdAt: data.createdAt,
+                            date: data.date
+                        });
+                    }
                 });
+                
                 for (const productId in allReviewsCache) {
-                    const reviews = allReviewsCache[productId];
-                    const sum = reviews.reduce((acc, r) => acc + r.rating, 0);
-                    const avg = sum / reviews.length;
+                    const uniqueReviews = Array.from(allReviewsCache[productId].values());
+                    const sum = uniqueReviews.reduce((acc, r) => acc + r.rating, 0);
+                    const avg = sum / uniqueReviews.length;
+                    
                     allReviewsCache[productId] = {
                         averageRating: avg.toFixed(1),
-                        count: reviews.length,
-                        reviews: reviews
+                        count: uniqueReviews.length,
+                        reviews: uniqueReviews
                     };
                 }
-                console.log(`✅ Загружены отзывы для ${Object.keys(allReviewsCache).length} товаров`);
+                
+                console.log(`✅ Загружены уникальные отзывы для ${Object.keys(allReviewsCache).length} товаров`);
+                displayProducts();
+                
             } catch (error) {
                 console.error("❌ Ошибка загрузки отзывов:", error);
             }
@@ -344,8 +409,9 @@
         }
 
         function getReviewWord(count) {
-            if (count % 10 === 1 && count % 100 !== 11) return `${count} отзыв`;
-            if (count % 10 >= 2 && count % 10 <= 4 && (count % 100 < 10 || count % 100 >= 20)) return `${count} отзыва`;
+            if (count === 0) return 'Нет отзывов';
+            if (count === 1) return '1 отзыв';
+            if (count >= 2 && count <= 4) return `${count} отзыва`;
             return `${count} отзывов`;
         }
 
@@ -367,12 +433,35 @@
 
             const imageContainer = document.createElement('div');
             imageContainer.className = 'product-image';
+            
             const img = document.createElement('img');
             img.src = product.image || 'images/default-product.jpg';
             img.alt = product.name;
             img.onerror = function () { this.src = 'images/default-product.jpg'; };
             img.loading = 'lazy';
             imageContainer.appendChild(img);
+            
+            const wishlistBtn = document.createElement('button');
+            wishlistBtn.className = 'wishlist-btn';
+            wishlistBtn.innerHTML = '<i class="far fa-heart"></i>';
+            wishlistBtn.setAttribute('data-product-id', product.id);
+            wishlistBtn.setAttribute('data-product-name', product.name);
+            wishlistBtn.setAttribute('data-product-price', product.price);
+            wishlistBtn.setAttribute('data-product-image', product.image || 'images/default-product.jpg');
+            
+            if (isInWishlist(product.id)) {
+                wishlistBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                wishlistBtn.style.background = '#ff4444';
+                wishlistBtn.style.color = 'white';
+                wishlistBtn.style.borderColor = '#ff4444';
+            }
+            
+            wishlistBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                toggleWishlist(product.id, product.name, product.price, product.image || 'images/default-product.jpg', wishlistBtn);
+            });
+            
+            imageContainer.appendChild(wishlistBtn);
 
             const brandHtml = product.brand ? `
                 <div class="product-brand">
@@ -389,10 +478,11 @@
             rating.className = 'product-rating';
             const avgRating = reviewStats.averageRating;
             const reviewsCount = reviewStats.count;
+            
             if (reviewsCount > 0) {
-                rating.innerHTML = `<span class="stars">${renderStars(avgRating)}</span><span class="rating-value">${avgRating}</span><span class="reviews-count">${getReviewWord(reviewsCount)}</span>`;
+                rating.innerHTML = `<span class="stars">${renderStars(parseFloat(avgRating))}</span><span class="rating-value">${avgRating}</span><span class="reviews-count">${getReviewWord(reviewsCount)}</span>`;
             } else {
-                rating.innerHTML = `<span class="stars">★★★★★</span><span class="reviews-count">Нет отзывов</span>`;
+                rating.innerHTML = `<span class="stars">☆☆☆☆☆</span><span class="reviews-count">Нет отзывов</span>`;
             }
 
             const price = document.createElement('div');
@@ -414,7 +504,6 @@
             return card;
         }
 
-        // ИСПРАВЛЕННАЯ ФУНКЦИЯ addToCart - добавляем категорию товара
         function addToCart(event) {
             event.preventDefault();
             event.stopPropagation();
@@ -426,7 +515,6 @@
             const price = parseInt(card.querySelector('.product-price').textContent.replace(/[^0-9]/g, ''));
             const image = card.querySelector('.product-image img')?.src || 'images/default-product.jpg';
             
-            // НАХОДИМ КАТЕГОРИЮ ТОВАРА
             const productData = allProducts.find(p => p.id === productId);
             const category = productData ? productData.category : 'Другое';
             
@@ -441,11 +529,11 @@
                     price: price, 
                     quantity: 1, 
                     image: image,
-                    category: category  // ← ДОБАВЛЯЕМ КАТЕГОРИЮ
+                    category: category
                 }); 
             }
             saveCart(cart);
-            showNotification(`✅ ${name} добавлен в корзину!`, '#F2DD00');
+            showNotification(`✅ ${name} добавлен в корзину!`, '#4CAF50');
         }
 
         function filterProducts() {
@@ -506,7 +594,7 @@
             document.querySelectorAll('.product-card').forEach(card => {
                 card.style.cursor = 'pointer';
                 card.addEventListener('click', function (e) {
-                    if (!e.target.closest('.add-to-cart')) {
+                    if (!e.target.closest('.add-to-cart') && !e.target.closest('.wishlist-btn')) {
                         window.location.href = `product.html?id=${this.dataset.productId}`;
                     }
                 });
@@ -572,7 +660,7 @@
 
         function showNotification(msg, color) {
             const n = document.createElement('div');
-            n.style.cssText = `position:fixed;bottom:20px;right:20px;background:${color};color:#000;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;font-weight:bold;border:2px solid #000;animation:slideIn 0.3s ease;`;
+            n.style.cssText = `position:fixed;bottom:20px;right:20px;background:${color};color:#fff;padding:15px 20px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:1000;font-weight:bold;animation:slideIn 0.3s ease;`;
             n.textContent = msg;
             const s = document.createElement('style');
             s.textContent = `@keyframes slideIn{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}`;
@@ -581,12 +669,12 @@
             setTimeout(() => { n.remove(); s.remove(); }, 3000);
         }
 
-        // === ЗАГРУЗКА ТОВАРОВ ===
         async function loadProducts() {
             const grid = document.getElementById('products-grid');
             grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;">📦 Загрузка товаров...</div>';
             try {
                 await loadAllReviews();
+                
                 const snapshot = await getDocs(collection(db, "товары"));
                 if (snapshot.empty) {
                     grid.innerHTML = `<div class="no-results"><i class="fas fa-box-open" style="font-size:48px;color:#ccc;"></i><p>Товары временно отсутствуют</p><p style="font-size:14px;color:#999;">Добавьте товары через админ-панель</p></div>`;
@@ -620,7 +708,12 @@
             }
         }
 
-        // === НАСТРОЙКА ОБРАБОТЧИКОВ ===
+        window.refreshReviews = async function() {
+            console.log("🔄 Принудительное обновление отзывов...");
+            await loadAllReviews();
+            showNotification('✅ Отзывы обновлены!', '#4CAF50');
+        };
+
         function setupSearch() {
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
@@ -672,7 +765,6 @@
             }
         }
 
-        // === ИНИЦИАЛИЗАЦИЯ ===
         document.addEventListener('DOMContentLoaded', async () => {
             currentBrandFilter = sessionStorage.getItem('filterBrand') || '';
             await loadProducts();
@@ -688,7 +780,6 @@
         });
 
         window.clearSearch = window.resetFilters;
-        window.refreshReviews = function () { loadAllReviews(); displayProducts(); };
     </script>
 </body>
 
