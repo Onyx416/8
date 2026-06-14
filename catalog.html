@@ -829,6 +829,30 @@
         </div>
     </footer>
 
+    <!-- Firebase подключение -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+            authDomain: "building-store-66294.firebaseapp.com",
+            projectId: "building-store-66294",
+            storageBucket: "building-store-66294.firebasestorage.app",
+            messagingSenderId: "192694380898",
+            appId: "1:192694380898:web:51837f94629555d310e43b"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        window.db = db;
+        window.firebaseInitialized = true;
+
+        console.log("✅ Firebase подключен на странице каталога");
+    </script>
+
+    <!-- Основной скрипт каталога -->
     <script>
         // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
         const MASTER_ADMIN = {
@@ -902,7 +926,7 @@
             window.location.href = 'index.html';
         }
 
-        // === ОБРАБОТЧИКИ ДЛЯ ПОДКАТЕГОРИЙ ===
+        // === ОБРАБОТЧИКИ ДЛЯ КАТАЛОГА ===
         function setupClickHandlers() {
             // Обработчики для заголовков категорий
             document.querySelectorAll('.category-section h2').forEach(element => {
@@ -926,7 +950,7 @@
                 });
             });
 
-            // Обработчики для ссылок внутри подкатегорий (конкретные товары)
+            // Обработчики для ссылок внутри подкатегорий
             document.querySelectorAll('.subcategory-list a').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -940,7 +964,7 @@
                 });
             });
 
-            // Обработчики для всей подкатегории (клик по карточке)
+            // Обработчики для всей подкатегории
             document.querySelectorAll('.subcategory-item').forEach(item => {
                 item.addEventListener('click', (e) => {
                     if (!e.target.closest('a') && !e.target.closest('h3')) {
@@ -976,9 +1000,7 @@
                     const subcategory = link.getAttribute('data-subcategory');
                     const category = link.getAttribute('data-category');
                     if (subcategory) {
-                        // Убираем активный класс у родительской категории
                         document.querySelectorAll('.categories-list a').forEach(l => l.classList.remove('active'));
-                        // Добавляем активный класс этой подкатегории
                         link.classList.add('active');
                         searchOnMainPage(subcategory, category, subcategory);
                     }
@@ -1013,6 +1035,22 @@
             });
         }
 
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateCartCounter();
             updateWishlistCounter();
@@ -1020,9 +1058,9 @@
             setupClickHandlers();
             setupHeaderSearch();
             setupNavCategoryFilters();
+            setupCategoryNavigation();
             updateAdminButtonVisibility();
 
-            // Подсветка активного пункта меню если есть сохранённая категория
             const currentCategory = sessionStorage.getItem('filterCategory');
             if (currentCategory) {
                 document.querySelectorAll('.categories-list a').forEach(link => {
@@ -1032,13 +1070,11 @@
                 });
             }
 
-            // Подсветка активной подкатегории
             const currentSubcategory = sessionStorage.getItem('filterSubcategory');
             if (currentSubcategory) {
                 document.querySelectorAll('.subcategories-list a').forEach(link => {
                     if (link.getAttribute('data-subcategory') === currentSubcategory) {
                         link.classList.add('active');
-                        // Также подсвечиваем родительскую категорию
                         const parentLi = link.closest('li')?.parentElement?.closest('li');
                         if (parentLi) {
                             const parentLink = parentLi.querySelector('> a');
@@ -1049,6 +1085,3 @@
             }
         });
     </script>
-</body>
-
-</html>
