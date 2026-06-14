@@ -474,6 +474,20 @@
             title.className = 'product-title';
             title.textContent = product.name;
 
+            // Добавляем блок с остатками и единицей измерения
+            const stock = product.stock !== undefined ? product.stock : 0;
+            const unit = product.unit || 'шт';
+            const stockText = stock <= 0 ? 'Нет в наличии' : (stock < 10 ? `Осталось: ${stock} ${unit}` : `В наличии: ${stock} ${unit}`);
+            const stockColor = stock <= 0 ? '#ff4444' : (stock < 10 ? '#ff9800' : '#4CAF50');
+            
+            const stockHtml = `
+                <div class="product-stock" style="margin-bottom: 8px;">
+                    <span style="background: ${stockColor}; color: white; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block;">
+                        ${stockText}
+                    </span>
+                </div>
+            `;
+
             const rating = document.createElement('div');
             rating.className = 'product-rating';
             const avgRating = reviewStats.averageRating;
@@ -487,16 +501,24 @@
 
             const price = document.createElement('div');
             price.className = 'product-price';
-            price.textContent = `${product.price.toLocaleString()} руб/шт.`;
+            price.textContent = `${product.price.toLocaleString()} ₽ / ${unit}`;
 
             const button = document.createElement('button');
             button.className = 'add-to-cart';
             button.setAttribute('data-product-id', product.id);
             button.innerHTML = '<i class="fas fa-shopping-cart"></i> В корзину';
+            
+            if (stock <= 0) {
+                button.disabled = true;
+                button.style.opacity = '0.5';
+                button.style.cursor = 'not-allowed';
+                button.innerHTML = '<i class="fas fa-times-circle"></i> Нет в наличии';
+            }
 
             card.appendChild(imageContainer);
             if (brandHtml) card.insertAdjacentHTML('beforeend', brandHtml);
             card.appendChild(title);
+            card.insertAdjacentHTML('beforeend', stockHtml);
             card.appendChild(rating);
             card.appendChild(price);
             card.appendChild(button);
@@ -509,17 +531,38 @@
             event.stopPropagation();
             const button = event.target.closest('.add-to-cart');
             if (!button) return;
+            
+            if (button.disabled) {
+                showNotification('❌ Этот товар закончился!', '#ff4444');
+                return;
+            }
+            
             const productId = button.dataset.productId;
             const card = button.closest('.product-card');
             const name = card.querySelector('.product-title').textContent;
-            const price = parseInt(card.querySelector('.product-price').textContent.replace(/[^0-9]/g, ''));
+            const priceText = card.querySelector('.product-price').textContent;
+            const price = parseInt(priceText.replace(/[^0-9]/g, ''));
             const image = card.querySelector('.product-image img')?.src || 'images/default-product.jpg';
             
             const productData = allProducts.find(p => p.id === productId);
             const category = productData ? productData.category : 'Другое';
+            const currentStock = productData ? productData.stock : 0;
+            const unit = productData ? productData.unit : 'шт';
+            
+            if (currentStock <= 0) {
+                showNotification(`❌ Товар "${name}" закончился!`, '#ff4444');
+                return;
+            }
             
             let cart = getCart();
             const existing = cart.find(item => item.id === productId);
+            const currentQuantityInCart = existing ? existing.quantity : 0;
+            
+            if (currentQuantityInCart + 1 > currentStock) {
+                showNotification(`❌ Недостаточно товара на складе! Доступно: ${currentStock} ${unit}`, '#ff4444');
+                return;
+            }
+            
             if (existing) { 
                 existing.quantity += 1; 
             } else { 
@@ -529,7 +572,8 @@
                     price: price, 
                     quantity: 1, 
                     image: image,
-                    category: category
+                    category: category,
+                    unit: unit
                 }); 
             }
             saveCart(cart);
@@ -685,6 +729,8 @@
                     const p = doc.data();
                     const productName = p.Название || p.name || "Без названия";
                     const productPrice = p.Цена || p.price || 0;
+                    const productStock = p.Количество !== undefined ? p.Количество : (p.stock !== undefined ? p.stock : 0);
+                    const productUnit = p.ЕдиницаИзмерения || p.unit || 'шт';
                     const productImage = p.imageUrl || 'images/default-product.jpg';
                     let productCategory = p.Категория || p.category || '';
                     if (!productCategory || productCategory === 'other' || productCategory === '') {
@@ -695,6 +741,8 @@
                         id: doc.id,
                         name: productName,
                         price: productPrice,
+                        stock: productStock,
+                        unit: productUnit,
                         image: productImage,
                         category: productCategory,
                         brand: productBrand
