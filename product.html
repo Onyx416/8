@@ -631,7 +631,7 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getFirestore, collection, getDocs, addDoc, doc, query, where, Timestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, collection, getDocs, addDoc, doc, query, where, Timestamp, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
@@ -865,8 +865,20 @@
         }
 
         function addToCart(product) {
+            if (product.stock <= 0) {
+                showNotification(`❌ Товар "${product.name}" закончился!`, '#ff4444');
+                return;
+            }
+            
             let cart = getCart();
             const existing = cart.find(item => item.id === product.id);
+            const currentQuantityInCart = existing ? existing.quantity : 0;
+            
+            if (currentQuantityInCart + 1 > product.stock) {
+                showNotification(`❌ Недостаточно товара на складе! Доступно: ${product.stock} ${product.unit}`, '#ff4444');
+                return;
+            }
+            
             if (existing) { 
                 existing.quantity += 1; 
             } else { 
@@ -876,7 +888,8 @@
                     price: product.price, 
                     quantity: 1, 
                     image: product.imageUrl || 'images/default-product.jpg', 
-                    category: product.category || 'Другое' 
+                    category: product.category || 'Другое',
+                    unit: product.unit || 'шт'
                 }); 
             }
             saveCart(cart);
@@ -980,6 +993,8 @@
                             id: docSnap.id,
                             name: p.Название || p.name || "Без названия",
                             price: p.Цена || p.price || 0,
+                            stock: p.Количество !== undefined ? p.Количество : (p.stock !== undefined ? p.stock : 0),
+                            unit: p.ЕдиницаИзмерения || p.unit || 'шт',
                             description: p.Описание || p.description || '',
                             imageUrl: p.imageUrl || 'images/default-product.jpg',
                             category: p.Категория || p.category || ''
@@ -996,19 +1011,30 @@
                 const avgRating = getAverageRating(currentReviews);
                 const currentUser = getCurrentUser();
                 const isLoggedIn = currentUser !== null;
+                
+                const stock = product.stock;
+                const unit = product.unit;
+                const stockText = stock <= 0 ? 'Нет в наличии' : (stock < 10 ? `Осталось: ${stock} ${unit}` : `В наличии: ${stock} ${unit}`);
+                const stockColor = stock <= 0 ? '#ff4444' : (stock < 10 ? '#ff9800' : '#4CAF50');
+                const isOutOfStock = stock <= 0;
 
                 document.getElementById('product-content').innerHTML = `
                     <div class="product-container">
                         <div class="product-gallery"><div class="main-image-container"><img src="${product.imageUrl}" alt="${product.name}" class="main-image" onerror="this.src='images/default-product.jpg'"></div></div>
                         <div class="product-info">
                             <h1 class="product-title">${escapeHtml(product.name)}</h1>
-                            <div class="product-price">${product.price.toLocaleString()} руб/шт.</div>
+                            <div class="product-price">${product.price.toLocaleString()} ₽ / ${unit}</div>
                             <div class="product-category"><i class="fas fa-tag"></i> ${escapeHtml(product.category || 'Без категории')}</div>
+                            <div class="product-stock-status" style="margin: 10px 0;">
+                                <span style="background: ${stockColor}; color: white; padding: 5px 15px; border-radius: 30px; font-size: 14px; font-weight: bold; display: inline-block;">
+                                    ${stockText}
+                                </span>
+                            </div>
                             <div class="product-description">${escapeHtml(product.description || 'Описание отсутствует')}</div>
                             <div class="product-specs"><div class="specs-title"><i class="fas fa-cog"></i> Характеристики</div><div class="specs-list" id="product-specs"></div></div>
                             <div class="action-buttons">
-                                <button class="btn btn-buy" id="buy-btn"><i class="fas fa-bolt"></i> Купить сейчас</button>
-                                <button class="btn btn-cart" id="cart-btn"><i class="fas fa-shopping-cart"></i> В корзину</button>
+                                <button class="btn btn-buy" id="buy-btn" ${isOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-bolt"></i> Купить сейчас</button>
+                                <button class="btn btn-cart" id="cart-btn" ${isOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-shopping-cart"></i> ${isOutOfStock ? 'Нет в наличии' : 'В корзину'}</button>
                                 <button class="btn btn-wishlist" id="wishlist-page-btn"><i class="far fa-heart"></i> В избранное</button>
                             </div>
                         </div>
@@ -1043,8 +1069,14 @@
                 `;
 
                 renderSpecs(product);
-                document.getElementById('buy-btn').onclick = () => { addToCart(product); setTimeout(() => window.location.href = 'checkout.html', 500); };
-                document.getElementById('cart-btn').onclick = () => addToCart(product);
+                
+                if (!isOutOfStock) {
+                    document.getElementById('buy-btn').onclick = () => { 
+                        addToCart(product); 
+                        setTimeout(() => window.location.href = 'checkout.html', 500); 
+                    };
+                    document.getElementById('cart-btn').onclick = () => addToCart(product);
+                }
                 
                 const wishlistPageBtn = document.getElementById('wishlist-page-btn');
                 if (wishlistPageBtn) {
