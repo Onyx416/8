@@ -369,7 +369,6 @@
             margin-bottom: 20px;
         }
 
-        /* Стили для страницы запрета доступа - КОМПАКТНЫЕ КНОПКИ С МАЛЕНЬКИМИ ИКОНКАМИ */
         .access-denied {
             text-align: center;
             padding: 50px 20px;
@@ -595,7 +594,6 @@
     </footer>
 
     <script>
-        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
         const MASTER_ADMIN = {
             id: 'admin_main',
             name: 'админ',
@@ -659,65 +657,9 @@
             localStorage.removeItem(key);
         }
 
-        // === СОХРАНЕНИЕ ЗАКАЗА В FIRESTORE И LOCALSTORAGE С userId ===
-        async function saveOrderToFirestore(orderData) {
-            try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-                const { getFirestore, collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-
-                const firebaseConfig = {
-                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
-                    authDomain: "building-store-66294.firebaseapp.com",
-                    projectId: "building-store-66294",
-                    storageBucket: "building-store-66294.firebasestorage.app",
-                    messagingSenderId: "192694380898",
-                    appId: "1:192694380898:web:51837f94629555d310e43b"
-                };
-
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
-
-                const docRef = await addDoc(collection(db, "orders"), {
-                    ...orderData,
-                    createdAt: Timestamp.fromDate(new Date()),
-                    updatedAt: Timestamp.fromDate(new Date())
-                });
-                console.log("✅ Заказ сохранен в Firestore, ID:", docRef.id);
-                return docRef.id;
-            } catch (error) {
-                console.error("❌ Ошибка сохранения в Firestore:", error);
-                return null;
-            }
-        }
-
-        async function saveOrder(orderData) {
-            // 1. Сохраняем в localStorage
-            const orders = JSON.parse(localStorage.getItem('orders')) || [];
-            orders.push(orderData);
-            localStorage.setItem('orders', JSON.stringify(orders));
-
-            // 2. Сохраняем в профиль пользователя
-            const currentUser = getCurrentUser();
-            if (currentUser) {
-                const users = getUsers();
-                const userIndex = users.findIndex(u => u.id === currentUser.id);
-                if (userIndex !== -1) {
-                    if (!users[userIndex].orders) users[userIndex].orders = [];
-                    users[userIndex].orders.push(orderData);
-                    localStorage.setItem('users', JSON.stringify(users));
-                }
-            }
-
-            // 3. Сохраняем в Firestore
-            await saveOrderToFirestore(orderData);
-
-            console.log("✅ Заказ сохранен:", orderData.orderNumber);
-        }
-
         let currentTotal = 0;
         let currentDeliveryCost = 0;
 
-        // Функция для отображения страницы с требованием авторизации
         function showAccessDenied() {
             const container = document.getElementById('checkout-container');
             container.innerHTML = `
@@ -739,7 +681,6 @@
             const userData = getFullUserData();
             const isLoggedIn = userData !== null;
 
-            // ПРОВЕРКА: если пользователь не авторизован - показываем страницу с требованием входа
             if (!isLoggedIn) {
                 showAccessDenied();
                 return;
@@ -751,7 +692,10 @@
             }
 
             currentTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-            const cartItemsHTML = cart.map(item => `<div class="cart-item-summary"><div class="cart-item-name">${escapeHtml(item.name)} x ${item.quantity}</div><div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} ₽</div></div>`).join('');
+            const cartItemsHTML = cart.map(item => {
+                const unit = item.unit || 'шт';
+                return `<div class="cart-item-summary"><div class="cart-item-name">${escapeHtml(item.name)} x ${item.quantity} ${unit}</div><div class="cart-item-price">${(item.price * item.quantity).toLocaleString()} ₽</div></div>`;
+            }).join('');
 
             container.innerHTML = `
                 <div class="checkout-grid">
@@ -836,18 +780,6 @@
             currentDeliveryCost = deliveryCost;
         }
 
-        function formatPhone(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.startsWith('7') || value.startsWith('8')) value = value.substring(1);
-            let formatted = '+7 (';
-            if (value.length > 0) formatted += value.substring(0, 3);
-            if (value.length >= 4) formatted += ') ' + value.substring(3, 6);
-            if (value.length >= 7) formatted += '-' + value.substring(6, 8);
-            if (value.length >= 9) formatted += '-' + value.substring(8, 10);
-            e.target.value = formatted;
-        }
-
-        // ИСПРАВЛЕННАЯ ФУНКЦИЯ submitOrder - С КАТЕГОРИЕЙ ТОВАРА
         async function submitOrder() {
             const cart = getCart();
             if (cart.length === 0) {
@@ -855,7 +787,6 @@
                 return;
             }
 
-            // ПРОВЕРКА: если пользователь не авторизован - показываем предупреждение и перенаправляем
             const currentUser = getCurrentUser();
             if (!currentUser) {
                 alert('Для оформления заказа необходимо войти в аккаунт!');
@@ -863,62 +794,167 @@
                 return;
             }
 
-            const userId = currentUser.id;
-            const userData = getFullUserData();
-            
-            if (!userData) {
-                alert('Ошибка: данные пользователя не найдены. Пожалуйста, войдите снова.');
-                window.location.href = 'auth.html';
-                return;
-            }
-
-            const customerData = {
-                name: userData.name,
-                phone: userData.phone || 'Не указан',
-                email: userData.email
-            };
-
-            const selectedDelivery = document.querySelector('.delivery-option.selected');
-            const deliveryMethod = selectedDelivery?.querySelector('.option-title')?.textContent || 'Самовывоз';
-            const deliveryPrice = selectedDelivery?.querySelector('.option-price')?.textContent || '0';
-            const deliveryCost = deliveryPrice.includes('450') ? 450 : 0;
-
-            const address = document.getElementById('address')?.value || '';
-            const comment = document.getElementById('comment')?.value || '';
-            const selectedPayment = document.querySelector('.payment-option.selected');
-            const paymentMethod = selectedPayment?.querySelector('.payment-title')?.textContent || 'Оплата онлайн';
-            const totalWithDelivery = currentTotal + deliveryCost;
-
-            // ИСПРАВЛЕННОЕ ФОРМИРОВАНИЕ items - С КАТЕГОРИЕЙ
-            const orderData = {
-                orderNumber: 'ORD-' + Date.now(),
-                date: new Date().toLocaleString('ru-RU'),
-                userId: userId,
-                customer: customerData,
-                delivery: { method: deliveryMethod, address: address || 'Не указан', cost: deliveryCost },
-                payment: { method: paymentMethod, status: 'pending' },
-                items: cart.map(item => ({ 
-                    id: item.id, 
-                    name: item.name, 
-                    price: item.price, 
-                    quantity: item.quantity, 
-                    total: item.price * item.quantity,
-                    category: item.category || 'Другое'  // ← КЛЮЧЕВОЕ ИСПРАВЛЕНИЕ
-                })),
-                subtotal: currentTotal,
-                deliveryCost: deliveryCost,
-                total: totalWithDelivery,
-                comment: comment,
-                status: 'новый'
-            };
-
             const submitBtn = document.getElementById('submit-order-btn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка наличия товаров...';
             submitBtn.disabled = true;
 
             try {
-                await saveOrder(orderData);
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                const { getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+                    authDomain: "building-store-66294.firebaseapp.com",
+                    projectId: "building-store-66294",
+                    storageBucket: "building-store-66294.firebasestorage.app",
+                    messagingSenderId: "192694380898",
+                    appId: "1:192694380898:web:51837f94629555d310e43b"
+                };
+                
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                
+                let outOfStockItems = [];
+                let stockIssues = [];
+                
+                for (const item of cart) {
+                    const productRef = doc(db, "товары", item.id);
+                    const productSnap = await getDoc(productRef);
+                    
+                    if (!productSnap.exists()) {
+                        outOfStockItems.push(item.name);
+                        continue;
+                    }
+                    
+                    const productData = productSnap.data();
+                    const currentStock = productData.Количество !== undefined ? productData.Количество : 
+                                         (productData.stock !== undefined ? productData.stock : 0);
+                    const unit = productData.ЕдиницаИзмерения || productData.unit || 'шт';
+                    
+                    if (currentStock <= 0) {
+                        outOfStockItems.push(`${item.name} (${unit})`);
+                    } else if (currentStock < item.quantity) {
+                        stockIssues.push({
+                            name: item.name,
+                            available: currentStock,
+                            requested: item.quantity,
+                            unit: unit
+                        });
+                    }
+                }
+                
+                if (outOfStockItems.length > 0) {
+                    let message = '❌ Оформление заказа отменено!\n\nСледующие товары закончились:\n';
+                    outOfStockItems.forEach(item => { message += `• ${item}\n`; });
+                    message += '\nПожалуйста, удалите эти товары из корзины и повторите попытку.';
+                    alert(message);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                if (stockIssues.length > 0) {
+                    let message = '⚠️ Оформление заказа отменено!\n\nКоличество следующих товаров ограничено:\n';
+                    stockIssues.forEach(issue => { 
+                        message += `• ${issue.name}: доступно ${issue.available} ${issue.unit}, вы заказали ${issue.requested} ${issue.unit}\n`;
+                    });
+                    message += '\nПожалуйста, уменьшите количество в корзине.';
+                    alert(message);
+                    submitBtn.innerHTML = originalText;
+                    submitBtn.disabled = false;
+                    return;
+                }
+                
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление заказа...';
+                
+                const userId = currentUser.id;
+                const userData = getFullUserData();
+                
+                if (!userData) {
+                    alert('Ошибка: данные пользователя не найдены. Пожалуйста, войдите снова.');
+                    window.location.href = 'auth.html';
+                    return;
+                }
+
+                const customerData = {
+                    name: userData.name,
+                    phone: userData.phone || 'Не указан',
+                    email: userData.email
+                };
+
+                const selectedDelivery = document.querySelector('.delivery-option.selected');
+                const deliveryMethod = selectedDelivery?.querySelector('.option-title')?.textContent || 'Самовывоз';
+                const deliveryPrice = selectedDelivery?.querySelector('.option-price')?.textContent || '0';
+                const deliveryCost = deliveryPrice.includes('450') ? 450 : 0;
+
+                const address = document.getElementById('address')?.value || '';
+                const comment = document.getElementById('comment')?.value || '';
+                const selectedPayment = document.querySelector('.payment-option.selected');
+                const paymentMethod = selectedPayment?.querySelector('.payment-title')?.textContent || 'Оплата онлайн';
+                const totalWithDelivery = currentTotal + deliveryCost;
+
+                const orderData = {
+                    orderNumber: 'ORD-' + Date.now(),
+                    date: new Date().toLocaleString('ru-RU'),
+                    userId: userId,
+                    customer: customerData,
+                    delivery: { method: deliveryMethod, address: address || 'Не указан', cost: deliveryCost },
+                    payment: { method: paymentMethod, status: 'pending' },
+                    items: cart.map(item => ({ 
+                        id: item.id, 
+                        name: item.name, 
+                        price: item.price, 
+                        quantity: item.quantity, 
+                        total: item.price * item.quantity,
+                        category: item.category || 'Другое',
+                        unit: item.unit || 'шт'
+                    })),
+                    subtotal: currentTotal,
+                    deliveryCost: deliveryCost,
+                    total: totalWithDelivery,
+                    comment: comment,
+                    status: 'новый'
+                };
+
+                for (const item of cart) {
+                    const productRef = doc(db, "товары", item.id);
+                    const productSnap = await getDoc(productRef);
+                    if (productSnap.exists()) {
+                        const productData = productSnap.data();
+                        const currentStock = productData.Количество !== undefined ? productData.Количество : 
+                                             (productData.stock !== undefined ? productData.stock : 0);
+                        const newStock = currentStock - item.quantity;
+                        
+                        await updateDoc(productRef, {
+                            Количество: newStock,
+                            stock: newStock
+                        });
+                        console.log(`✅ Обновлен остаток товара "${item.name}": ${currentStock} → ${newStock}`);
+                    }
+                }
+                
+                const ordersCollection = collection(db, "orders");
+                await addDoc(ordersCollection, {
+                    ...orderData,
+                    createdAt: Timestamp.fromDate(new Date()),
+                    updatedAt: Timestamp.fromDate(new Date())
+                });
+                
+                const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                orders.push(orderData);
+                localStorage.setItem('orders', JSON.stringify(orders));
+                
+                if (currentUser) {
+                    const users = getUsers();
+                    const userIndex = users.findIndex(u => u.id === currentUser.id);
+                    if (userIndex !== -1) {
+                        if (!users[userIndex].orders) users[userIndex].orders = [];
+                        users[userIndex].orders.push(orderData);
+                        localStorage.setItem('users', JSON.stringify(users));
+                    }
+                }
+                
                 clearCart();
 
                 const container = document.getElementById('checkout-container');
@@ -934,6 +970,7 @@
                     </div>
                 `;
                 updateCartCounterInHeader();
+                
             } catch (error) {
                 console.error('Ошибка при оформлении заказа:', error);
                 alert('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте снова.');
@@ -982,7 +1019,6 @@
             }
         }
 
-        // Функция для проверки авторизации при загрузке страницы
         function checkAuthAndRender() {
             const isLoggedIn = getCurrentUser() !== null;
             
