@@ -12,6 +12,24 @@
         href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700;800&family=Playfair+Display:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Добавляем стили для индикатора загрузки */
+        .loading-products {
+            grid-column: 1/-1;
+            text-align: center;
+            padding: 60px 20px;
+        }
+        .loading-products i {
+            font-size: 48px;
+            color: #F2DD00;
+            margin-bottom: 15px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
 </head>
 
 <body>
@@ -68,7 +86,13 @@
     <main class="container">
         <section class="products-section">
             <div id="brand-filter-header" class="brand-filter-header" style="display: none;"></div>
-            <div class="products-grid" id="products-grid"></div>
+            <div class="products-grid" id="products-grid">
+                <!-- Индикатор загрузки -->
+                <div class="loading-products">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <p>Загрузка товаров...</p>
+                </div>
+            </div>
         </section>
 
         <section class="brands-section">
@@ -351,10 +375,11 @@
                 }
                 
                 console.log(`✅ Загружены уникальные отзывы для ${Object.keys(allReviewsCache).length} товаров`);
-                displayProducts();
+                return true;
                 
             } catch (error) {
                 console.error("❌ Ошибка загрузки отзывов:", error);
+                return false;
             }
         }
 
@@ -400,6 +425,7 @@
         let currentFilter = 'all';
         let currentSearchQuery = '';
         let currentBrandFilter = sessionStorage.getItem('filterBrand') || '';
+        let isLoading = true;
 
         function escapeHtml(text) {
             if (!text) return '';
@@ -474,7 +500,6 @@
             title.className = 'product-title';
             title.textContent = product.name;
 
-            // Добавляем блок с остатками и единицей измерения
             const stock = product.stock !== undefined ? product.stock : 0;
             const unit = product.unit || 'шт';
             const stockText = stock <= 0 ? 'Нет в наличии' : (stock < 10 ? `Осталось: ${stock} ${unit}` : `В наличии: ${stock} ${unit}`);
@@ -493,7 +518,7 @@
             const avgRating = reviewStats.averageRating;
             const reviewsCount = reviewStats.count;
             
-            if (reviewsCount > 0) {
+            if (reviewsCount > 0 && avgRating > 0) {
                 rating.innerHTML = `<span class="stars">${renderStars(parseFloat(avgRating))}</span><span class="rating-value">${avgRating}</span><span class="reviews-count">${getReviewWord(reviewsCount)}</span>`;
             } else {
                 rating.innerHTML = `<span class="stars">☆☆☆☆☆</span><span class="reviews-count">Нет отзывов</span>`;
@@ -613,13 +638,17 @@
                 brandFilterHeader.style.display = 'none';
             }
 
-            if (filtered.length === 0) {
+            if (filtered.length === 0 && !isLoading) {
                 let message = '';
                 if (currentSearchQuery) message = `По запросу "<strong>${escapeHtml(currentSearchQuery)}</strong>" ничего не найдено`;
                 else if (currentFilter !== 'all') message = `Товары в категории "<strong>${escapeHtml(currentFilter)}</strong>" не найдены`;
                 else if (currentBrandFilter) message = `Товары бренда "<strong>${escapeHtml(currentBrandFilter)}</strong>" не найдены`;
                 else message = 'Товары временно отсутствуют';
                 grid.innerHTML = `<div class="no-results"><i class="fas fa-search"></i><p>${message}</p>${(currentSearchQuery || currentFilter !== 'all' || currentBrandFilter) ? '<button class="clear-search" onclick="window.resetAllFilters()">Показать все товары</button>' : ''}</div>`;
+                return;
+            }
+            
+            if (filtered.length === 0 && isLoading) {
                 return;
             }
 
@@ -715,15 +744,23 @@
 
         async function loadProducts() {
             const grid = document.getElementById('products-grid');
-            grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:50px;">📦 Загрузка товаров...</div>';
+            isLoading = true;
+            
             try {
+                // Загружаем отзывы
                 await loadAllReviews();
                 
+                // Загружаем товары из Firebase
+                console.log("🔄 Загрузка товаров из Firebase...");
                 const snapshot = await getDocs(collection(db, "товары"));
+                
                 if (snapshot.empty) {
+                    console.log("⚠️ Товары не найдены в Firebase");
                     grid.innerHTML = `<div class="no-results"><i class="fas fa-box-open" style="font-size:48px;color:#ccc;"></i><p>Товары временно отсутствуют</p><p style="font-size:14px;color:#999;">Добавьте товары через админ-панель</p></div>`;
+                    isLoading = false;
                     return;
                 }
+                
                 allProducts = [];
                 snapshot.forEach(doc => {
                     const p = doc.data();
@@ -748,17 +785,22 @@
                         brand: productBrand
                     });
                 });
+                
                 console.log(`📋 Всего товаров загружено: ${allProducts.length}`);
+                isLoading = false;
                 displayProducts();
+                
             } catch (error) {
-                console.error('Ошибка загрузки:', error);
-                grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px;color:red;"><i class="fas fa-exclamation-triangle" style="font-size:48px;"></i><p>❌ Ошибка загрузки товаров</p><p style="font-size:14px;">Проверьте подключение к Firebase</p></div>`;
+                console.error('❌ Ошибка загрузки:', error);
+                grid.innerHTML = `<div class="no-results"><i class="fas fa-exclamation-triangle" style="font-size:48px;color:#ff4444;"></i><p>❌ Ошибка загрузки товаров</p><p style="font-size:14px;">Проверьте подключение к Firebase</p><button class="clear-search" onclick="location.reload()">Перезагрузить страницу</button></div>`;
+                isLoading = false;
             }
         }
 
         window.refreshReviews = async function() {
             console.log("🔄 Принудительное обновление отзывов...");
             await loadAllReviews();
+            displayProducts();
             showNotification('✅ Отзывы обновлены!', '#4CAF50');
         };
 
@@ -810,10 +852,13 @@
             const savedBrand = sessionStorage.getItem('filterBrand');
             if (savedBrand) {
                 currentBrandFilter = savedBrand;
+                setTimeout(() => displayProducts(), 500);
             }
         }
 
+        // Запускаем загрузку при загрузке страницы
         document.addEventListener('DOMContentLoaded', async () => {
+            console.log("📄 Страница загружена, начинаем загрузку товаров...");
             currentBrandFilter = sessionStorage.getItem('filterBrand') || '';
             await loadProducts();
             handleSearchFromCatalog();
