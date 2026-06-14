@@ -199,7 +199,6 @@
             background: #cc0000;
         }
 
-        /* Стили для отзывов */
         .reviews-list-admin {
             max-height: 600px;
             overflow-y: auto;
@@ -318,7 +317,6 @@
             transform: translateY(-2px);
         }
 
-        /* Модальное окно редактирования отзыва */
         .review-modal {
             display: none;
             position: fixed;
@@ -479,13 +477,6 @@
             border-bottom: 1px solid #eee;
         }
 
-        .highlight {
-            background-color: #F2DD00;
-            padding: 0 2px;
-            border-radius: 3px;
-            font-weight: bold;
-        }
-
         .products-list {
             max-height: 600px;
             overflow-y: auto;
@@ -576,7 +567,6 @@
             transform: translateY(-2px);
         }
 
-        /* Стили для управления подкатегориями */
         .subcategories-grid {
             display: flex;
             flex-direction: column;
@@ -1151,6 +1141,31 @@
                             placeholder="Например: Ламинат 34 класс, Дуб Виндзор" required></div>
                     <div class="form-group"><label>Цена *</label><input type="number" id="product-price"
                             placeholder="1250" required></div>
+                    <div class="form-group"><label>Количество на складе *</label><input type="number" id="product-stock" min="0" value="100" required></div>
+                    <div class="form-group"><label>Единица измерения *</label>
+                        <select id="product-unit" required>
+                            <option value="шт">шт (штуки)</option>
+                            <option value="м">м (метры)</option>
+                            <option value="м²">м² (квадратные метры)</option>
+                            <option value="м³">м³ (кубические метры)</option>
+                            <option value="мм">мм (миллиметры)</option>
+                            <option value="кг">кг (килограммы)</option>
+                            <option value="г">г (граммы)</option>
+                            <option value="л">л (литры)</option>
+                            <option value="рулон">рулон</option>
+                            <option value="пачка">пачка</option>
+                            <option value="упаковка">упаковка</option>
+                            <option value="набор">набор</option>
+                            <option value="комплект">комплект</option>
+                            <option value="лист">лист</option>
+                            <option value="панель">панель</option>
+                            <option value="мешок">мешок</option>
+                            <option value="ведро">ведро</option>
+                            <option value="бутылка">бутылка</option>
+                            <option value="банка">банка</option>
+                            <option value="катушка">катушка</option>
+                        </select>
+                    </div>
                     <div class="form-group"><label>Описание</label><textarea id="product-description" rows="3"
                             placeholder="Подробное описание товара..."></textarea></div>
                     <div class="form-group"><label>URL изображения</label><input type="text" id="product-image"
@@ -1838,6 +1853,8 @@
                         id: docSnap.id,
                         name: p.Название || p.name || "Без названия",
                         price: p.Цена || p.price || 0,
+                        stock: p.Количество !== undefined ? p.Количество : (p.stock !== undefined ? p.stock : 0),
+                        unit: p.ЕдиницаИзмерения || p.unit || 'шт',
                         description: p.Описание || p.description || '',
                         category: p.Категория || p.category || '',
                         subcategory: p.Подкатегория || p.subcategory || '',
@@ -1869,11 +1886,15 @@
             if (filtered.length === 0) { container.innerHTML = `<div style="text-align:center;padding:40px;">🔍 Ничего не найдено</div>`; return; }
             container.innerHTML = '';
             filtered.forEach(product => {
+                const stock = product.stock !== undefined ? product.stock : 0;
+                const stockText = stock <= 0 ? 'Нет в наличии' : (stock < 10 ? `Осталось: ${stock} ${product.unit}` : `В наличии: ${stock} ${product.unit}`);
+                const stockColor = stock <= 0 ? '#ff4444' : (stock < 10 ? '#ff9800' : '#4CAF50');
+                
                 const div = document.createElement('div');
                 div.className = 'product-item';
                 div.innerHTML = `
-                    <div class="product-info"><h3><i class="fas fa-cube"></i> ${escapeHtml(product.name)}</h3><p>${escapeHtml(product.description.substring(0, 80))}${product.description.length > 80 ? '...' : ''}</p><div style="margin-top: 5px;">${product.category ? `<span class="product-category-badge"><i class="fas fa-tag"></i> ${escapeHtml(product.category)}</span>` : ''}${product.subcategory ? `<span class="product-category-badge"><i class="fas fa-folder"></i> ${escapeHtml(product.subcategory)}</span>` : ''}${product.brand ? `<span class="product-brand-badge"><i class="fas fa-trademark"></i> ${escapeHtml(product.brand)}</span>` : ''}</div></div>
-                    <div class="product-price">${product.price.toLocaleString()} ₽</div>
+                    <div class="product-info"><h3><i class="fas fa-cube"></i> ${escapeHtml(product.name)}</h3><p>${escapeHtml(product.description.substring(0, 80))}${product.description.length > 80 ? '...' : ''}</p><div style="margin-top: 5px;">${product.category ? `<span class="product-category-badge"><i class="fas fa-tag"></i> ${escapeHtml(product.category)}</span>` : ''}${product.subcategory ? `<span class="product-category-badge"><i class="fas fa-folder"></i> ${escapeHtml(product.subcategory)}</span>` : ''}${product.brand ? `<span class="product-brand-badge"><i class="fas fa-trademark"></i> ${escapeHtml(product.brand)}</span>` : ''}</div><div style="margin-top: 8px;"><span style="background: ${stockColor}; color: white; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: bold;">${stockText}</span></div></div>
+                    <div class="product-price">${product.price.toLocaleString()} ₽ / ${product.unit}</div>
                     <div class="product-actions"><button class="edit-btn" data-id="${product.id}">✏️ Редакт</button><button class="delete-btn" data-id="${product.id}">🗑️ Удалить</button></div>
                 `;
                 container.appendChild(div);
@@ -1893,6 +1914,8 @@
             const product = {
                 Название: document.getElementById('product-name').value,
                 Цена: parseInt(document.getElementById('product-price').value),
+                Количество: parseInt(document.getElementById('product-stock').value) || 0,
+                ЕдиницаИзмерения: document.getElementById('product-unit').value,
                 Описание: document.getElementById('product-description').value,
                 imageUrl: document.getElementById('product-image').value || 'images/default-product.jpg',
                 Категория: document.getElementById('product-category').value,
@@ -1919,6 +1942,8 @@
             if (product) {
                 document.getElementById('product-name').value = product.name;
                 document.getElementById('product-price').value = product.price;
+                document.getElementById('product-stock').value = product.stock || 0;
+                document.getElementById('product-unit').value = product.unit || 'шт';
                 document.getElementById('product-description').value = product.description;
                 document.getElementById('product-image').value = product.imageUrl;
                 document.getElementById('product-category').value = product.category;
@@ -2077,7 +2102,7 @@
                     <div class="order-items">
                         <div class="order-items-title">Товары (${items.length}):</div>
                         <div class="items-list">
-                            ${items.map(item => `<div class="order-item"><span>${escapeHtml(item.name)} x ${item.quantity}</span><span>${(item.price * item.quantity).toLocaleString()} ₽</span></div>`).join('')}
+                            ${items.map(item => `<div class="order-item"><span>${escapeHtml(item.name)} x ${item.quantity} ${item.unit || 'шт'}</span><span>${(item.price * item.quantity).toLocaleString()} ₽</span></div>`).join('')}
                         </div>
                     </div>
                     <div class="order-total">Итого: ${(order.total || 0).toLocaleString()} ₽</div>
@@ -2262,7 +2287,6 @@
 
         function escapeHtml(t) { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; }
 
-        // Глобальные функции для модального окна
         window.closeReviewModal = closeReviewModal;
 
         async function init() {
