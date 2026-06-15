@@ -112,12 +112,24 @@
         .item-name {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             color: #000;
         }
 
+        .item-stock {
+            margin-bottom: 5px;
+        }
+
+        .item-stock span {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
         .item-price {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #EDD653;
             margin-bottom: 15px;
@@ -220,6 +232,11 @@
         .order-btn:hover {
             background: #e6ce00;
             transform: translateY(-2px);
+        }
+
+        .order-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         .empty-cart {
@@ -464,18 +481,57 @@
             return div.innerHTML;
         }
 
-        function updateCartDisplay() {
-            let cart = getCart();
+        function showNotification(msg, color) {
+            const n = document.createElement('div');
+            n.style.cssText = `position:fixed;bottom:20px;right:20px;background:${color};color:#fff;padding:12px 20px;border-radius:8px;z-index:1000;font-weight:bold;animation:slideInRight 0.3s ease;box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+            n.textContent = msg;
+            const s = document.createElement('style');
+            s.textContent = `@keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}`;
+            document.head.appendChild(s);
+            document.body.appendChild(n);
+            setTimeout(() => { n.remove(); s.remove(); }, 3000);
+        }
+
+        async function getProductStockInfo(productId) {
+            try {
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+                    authDomain: "building-store-66294.firebaseapp.com",
+                    projectId: "building-store-66294",
+                    storageBucket: "building-store-66294.firebasestorage.app",
+                    messagingSenderId: "192694380898",
+                    appId: "1:192694380898:web:51837f94629555d310e43b"
+                };
+                
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                
+                const productRef = doc(db, "товары", productId);
+                const productSnap = await getDoc(productRef);
+                
+                if (productSnap.exists()) {
+                    const productData = productSnap.data();
+                    return {
+                        stock: productData.Количество !== undefined ? productData.Количество : 
+                               (productData.stock !== undefined ? productData.stock : 0),
+                        unit: productData.ЕдиницаИзмерения || productData.unit || 'шт'
+                    };
+                }
+                return { stock: 0, unit: 'шт' };
+            } catch (error) {
+                console.error('Ошибка получения данных товара:', error);
+                return { stock: 0, unit: 'шт' };
+            }
+        }
+
+        async function updateCartDisplay() {
+            const cart = getCart();
             const cartContent = document.getElementById('cart-content');
             if (!cartContent) return;
-            let changed = false;
-            cart.forEach(item => {
-                if (!item.image || item.image === 'undefined') {
-                    item.image = 'images/default-product.jpg';
-                    changed = true;
-                }
-            });
-            if (changed) saveCart(cart);
+            
             if (cart.length === 0) {
                 cartContent.innerHTML = `
                     <div class="empty-cart">
@@ -486,32 +542,61 @@
                 `;
                 return;
             }
+            
+            const cartWithStock = [];
+            for (const item of cart) {
+                const stockInfo = await getProductStockInfo(item.id);
+                cartWithStock.push({
+                    ...item,
+                    currentStock: stockInfo.stock,
+                    unit: stockInfo.unit || item.unit || 'шт'
+                });
+            }
+            
             let itemsHTML = '';
             let total = 0;
             let totalItems = 0;
-            cart.forEach(item => {
+            let hasOutOfStock = false;
+            
+            for (const item of cartWithStock) {
                 const itemTotal = item.price * item.quantity;
                 total += itemTotal;
                 totalItems += item.quantity;
                 const productImage = getProductImage(item.id, item.name, item.image);
+                const unit = item.unit;
+                const currentStock = item.currentStock;
+                
+                const stockText = currentStock <= 0 ? 'Нет в наличии' : (currentStock < 10 ? `Осталось: ${currentStock} ${unit}` : `В наличии: ${currentStock} ${unit}`);
+                const stockColor = currentStock <= 0 ? '#ff4444' : (currentStock < 10 ? '#ff9800' : '#4CAF50');
+                const isOutOfStock = currentStock <= 0;
+                const isQuantityExceeds = item.quantity > currentStock && currentStock > 0;
+                
+                if (isOutOfStock || isQuantityExceeds) {
+                    hasOutOfStock = true;
+                }
+                
                 itemsHTML += `
                     <div class="cart-item">
                         <div class="item-image"><img src="${productImage}" alt="${escapeHtml(item.name)}" onerror="this.src='images/default-product.jpg'" style="width:100%;height:100%;object-fit:cover;"></div>
                         <div class="item-details">
                             <div class="item-name">${escapeHtml(item.name)}</div>
-                            <div class="item-price">${item.price.toLocaleString()} руб/шт.</div>
+                            <div class="item-stock"><span style="background: ${stockColor}; color: white; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; display: inline-block;">${stockText}</span></div>
+                            <div class="item-price">${item.price.toLocaleString()} ₽ / ${unit}</div>
                             <div class="item-controls">
                                 <div class="quantity-controls">
-                                    <button class="quantity-btn" data-id="${item.id}" data-change="-1"><i class="fas fa-minus"></i></button>
+                                    <button class="quantity-btn" data-id="${item.id}" data-change="-1" ${isOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-minus"></i></button>
                                     <span class="quantity">${item.quantity}</span>
-                                    <button class="quantity-btn" data-id="${item.id}" data-change="1"><i class="fas fa-plus"></i></button>
+                                    <button class="quantity-btn" data-id="${item.id}" data-change="1" ${isOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-plus"></i></button>
                                 </div>
                                 <button class="remove-btn" data-id="${item.id}"><i class="fas fa-trash"></i> Удалить</button>
                             </div>
+                            ${isQuantityExceeds ? `<div style="margin-top: 8px; color: #ff4444; font-size: 12px;">⚠️ В корзине ${item.quantity} ${unit}, доступно только ${currentStock} ${unit}</div>` : ''}
+                            ${isOutOfStock ? `<div style="margin-top: 8px; color: #ff4444; font-size: 12px;">❌ Товар закончился! Пожалуйста, удалите его из корзины.</div>` : ''}
                         </div>
                     </div>
                 `;
-            });
+            }
+            
             const loginPrompt = !isUserLoggedIn() ? `
                 <div class="login-prompt">
                     <i class="fas fa-info-circle"></i> 
@@ -519,6 +604,7 @@
                     чтобы сохранить корзину и продолжить покупки позже!
                 </div>
             ` : '';
+            
             cartContent.innerHTML = `
                 ${loginPrompt}
                 <div class="cart-container">
@@ -527,71 +613,108 @@
                         <h3 class="summary-title">Ваш заказ</h3>
                         <div class="summary-row">
                             <span class="summary-label">Товары, ${totalItems} шт</span>
-                            <span class="summary-value">${total.toLocaleString()} руб</span>
+                            <span class="summary-value">${total.toLocaleString()} ₽</span>
                         </div>
                         <div class="summary-row total-row">
                             <span class="summary-label">Итого</span>
-                            <span class="summary-value">${total.toLocaleString()} руб</span>
+                            <span class="summary-value">${total.toLocaleString()} ₽</span>
                         </div>
-                        <button class="order-btn" id="checkout-btn"><i class="fas fa-shopping-bag"></i> Оформить заказ</button>
+                        <button class="order-btn" id="checkout-btn" ${hasOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-shopping-bag"></i> ${hasOutOfStock ? 'Есть проблемы с наличием' : 'Оформить заказ'}</button>
                     </div>
                 </div>
             `;
+            
             document.querySelectorAll('.quantity-btn').forEach(btn => {
                 btn.removeEventListener('click', handleQuantityClick);
                 btn.addEventListener('click', handleQuantityClick);
             });
+            
             document.querySelectorAll('.remove-btn').forEach(btn => {
                 btn.removeEventListener('click', handleRemoveClick);
                 btn.addEventListener('click', handleRemoveClick);
             });
-            const checkoutBtn = document.getElementById('checkout-btn');
-            if (checkoutBtn) {
-                checkoutBtn.removeEventListener('click', goToCheckout);
-                checkoutBtn.addEventListener('click', goToCheckout);
-            }
         }
 
-        function handleQuantityClick(e) {
+        async function handleQuantityClick(e) {
             const btn = e.currentTarget;
+            if (btn.disabled) return;
+            
             const productId = btn.getAttribute('data-id');
             const change = parseInt(btn.getAttribute('data-change'));
-            updateQuantity(productId, change);
+            
+            const cart = getCart();
+            const itemIndex = cart.findIndex(item => item.id === productId);
+            if (itemIndex !== -1) {
+                const newQuantity = cart[itemIndex].quantity + change;
+                
+                if (newQuantity <= 0) {
+                    cart.splice(itemIndex, 1);
+                    saveCart(cart);
+                    showNotification('🗑️ Товар удален из корзины', '#ff4444');
+                } else {
+                    if (change > 0) {
+                        const stockInfo = await getProductStockInfo(productId);
+                        if (newQuantity > stockInfo.stock) {
+                            showNotification(`❌ Недостаточно товара на складе! Доступно: ${stockInfo.stock} ${stockInfo.unit}`, '#ff4444');
+                            return;
+                        }
+                    }
+                    cart[itemIndex].quantity = newQuantity;
+                    saveCart(cart);
+                }
+            }
         }
 
         function handleRemoveClick(e) {
             const btn = e.currentTarget;
             const productId = btn.getAttribute('data-id');
-            removeFromCart(productId);
-        }
-
-        function updateQuantity(productId, change) {
-            const cart = getCart();
-            const itemIndex = cart.findIndex(item => item.id === productId);
-            if (itemIndex !== -1) {
-                const newQuantity = cart[itemIndex].quantity + change;
-                if (newQuantity <= 0) {
-                    cart.splice(itemIndex, 1);
-                } else {
-                    cart[itemIndex].quantity = newQuantity;
-                }
-                saveCart(cart);
+            let cart = getCart();
+            const removedItem = cart.find(item => item.id === productId);
+            cart = cart.filter(item => item.id !== productId);
+            saveCart(cart);
+            if (removedItem) {
+                showNotification(`🗑️ ${removedItem.name} удален из корзины`, '#ff4444');
             }
         }
 
-        function removeFromCart(productId) {
-            let cart = getCart();
-            cart = cart.filter(item => item.id !== productId);
-            saveCart(cart);
-        }
-
-        function goToCheckout() {
+        async function goToCheckout() {
             const cart = getCart();
             if (cart.length === 0) {
                 alert('Корзина пуста! Добавьте товары перед оформлением заказа.');
                 return;
             }
-            window.location.href = 'checkout.html';
+            
+            const btn = document.getElementById('checkout-btn');
+            if (btn.disabled) {
+                alert('❌ Невозможно оформить заказ. Проверьте наличие товаров в корзине.');
+                return;
+            }
+            
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка...';
+            btn.disabled = true;
+            
+            let hasIssues = false;
+            for (const item of cart) {
+                const stockInfo = await getProductStockInfo(item.id);
+                if (stockInfo.stock <= 0) {
+                    alert(`❌ Товар "${item.name}" закончился! Пожалуйста, удалите его из корзины.`);
+                    hasIssues = true;
+                    break;
+                }
+                if (item.quantity > stockInfo.stock) {
+                    alert(`⚠️ Количество товара "${item.name}" превышает доступное. Доступно: ${stockInfo.stock} ${stockInfo.unit}`);
+                    hasIssues = true;
+                    break;
+                }
+            }
+            
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            
+            if (!hasIssues) {
+                window.location.href = 'checkout.html';
+            }
         }
 
         function updateCartCounter() {
@@ -627,12 +750,33 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCartDisplay();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await updateCartDisplay();
             updateUserStatusInHeader();
             setupSearch();
             updateAdminButtonVisibility();
             setTimeout(() => updateAdminButtonVisibility(), 100);
+        });
+    </script>
+    <script>
+        function setupCategoryNavigation() {
+            document.querySelectorAll('.category-nav-link').forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const category = link.getAttribute('data-category');
+                    if (category) {
+                        sessionStorage.setItem('filterCategory', category);
+                        sessionStorage.removeItem('searchQuery');
+                        sessionStorage.removeItem('filterSubcategory');
+                        sessionStorage.removeItem('filterBrand');
+                        window.location.href = 'index.html';
+                    }
+                });
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupCategoryNavigation();
         });
     </script>
 </body>

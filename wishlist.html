@@ -114,14 +114,26 @@
         .wishlist-item-name {
             font-size: 16px;
             font-weight: bold;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
 
+        .wishlist-item-stock {
+            margin-bottom: 5px;
+        }
+
+        .wishlist-item-stock span {
+            font-size: 10px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+
         .wishlist-item-price {
-            font-size: 20px;
+            font-size: 16px;
             font-weight: bold;
             color: #EDD653;
         }
@@ -152,9 +164,15 @@
             background-color: #F2DD00;
         }
 
-        .add-to-cart-btn:hover {
+        .add-to-cart-btn:hover:not(:disabled) {
             background-color: #e6ce00;
             transform: translateY(-2px);
+        }
+
+        .add-to-cart-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #ccc;
         }
 
         .remove-btn {
@@ -273,7 +291,7 @@
             }
 
             .wishlist-item-price {
-                font-size: 18px;
+                font-size: 14px;
             }
 
             .wishlist-item-actions {
@@ -519,7 +537,10 @@
             const wishlist = getWishlist();
             const totalItems = wishlist.length;
             const counter = document.querySelector('.wishlist-counter');
-            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
         }
 
         function updateCartCounter() {
@@ -529,73 +550,213 @@
             const cart = JSON.parse(localStorage.getItem(cartKey)) || [];
             const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
             const counter = document.querySelector('.cart-counter');
-            if (counter) { counter.textContent = totalItems; counter.style.display = totalItems > 0 ? 'flex' : 'none'; }
+            if (counter) {
+                counter.textContent = totalItems;
+                counter.style.display = totalItems > 0 ? 'flex' : 'none';
+            }
         }
 
-        function addToCart(product) {
+        function showNotification(msg, color) {
+            const n = document.createElement('div');
+            n.style.cssText = `position:fixed;bottom:20px;right:20px;background:${color};color:#fff;padding:12px 20px;border-radius:8px;z-index:1000;font-weight:bold;animation:slideInRight 0.3s ease;box-shadow:0 4px 12px rgba(0,0,0,0.15);`;
+            n.textContent = msg;
+            const s = document.createElement('style');
+            s.textContent = `@keyframes slideInRight{from{transform:translateX(100%);opacity:0;}to{transform:translateX(0);opacity:1;}}`;
+            document.head.appendChild(s);
+            document.body.appendChild(n);
+            setTimeout(() => { n.remove(); s.remove(); }, 3000);
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        async function getProductInfo(productId) {
+            try {
+                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                const { getFirestore, doc, getDoc } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+                    authDomain: "building-store-66294.firebaseapp.com",
+                    projectId: "building-store-66294",
+                    storageBucket: "building-store-66294.firebasestorage.app",
+                    messagingSenderId: "192694380898",
+                    appId: "1:192694380898:web:51837f94629555d310e43b"
+                };
+                
+                const app = initializeApp(firebaseConfig);
+                const db = getFirestore(app);
+                
+                const productRef = doc(db, "товары", productId);
+                const productSnap = await getDoc(productRef);
+                
+                if (productSnap.exists()) {
+                    const productData = productSnap.data();
+                    return {
+                        stock: productData.Количество !== undefined ? productData.Количество : 
+                               (productData.stock !== undefined ? productData.stock : 0),
+                        unit: productData.ЕдиницаИзмерения || productData.unit || 'шт',
+                        price: productData.Цена || productData.price || 0,
+                        name: productData.Название || productData.name || 'Товар',
+                        image: productData.imageUrl || 'images/default-product.jpg'
+                    };
+                }
+                return { stock: 0, unit: 'шт', price: 0, name: 'Товар', image: 'images/default-product.jpg' };
+            } catch (error) {
+                console.error('Ошибка получения данных товара:', error);
+                return { stock: 0, unit: 'шт', price: 0, name: 'Товар', image: 'images/default-product.jpg' };
+            }
+        }
+
+        async function addToCartFromWishlist(item) {
+            const productInfo = await getProductInfo(item.id);
+            
+            if (productInfo.stock <= 0) {
+                showNotification(`❌ Товар "${item.name}" закончился!`, '#ff4444');
+                return false;
+            }
+            
             const currentUser = getCurrentUser();
             let cartKey = 'cart_guest';
             if (currentUser && currentUser.id) cartKey = `cart_${currentUser.id}`;
             let cart = JSON.parse(localStorage.getItem(cartKey)) || [];
-            const existingItem = cart.find(item => item.id === product.id);
-            if (existingItem) { existingItem.quantity += 1; }
-            else { cart.push({ id: product.id, name: product.name, price: product.price, quantity: 1, image: product.image }); }
+            
+            const existingItem = cart.find(cartItem => cartItem.id === item.id);
+            const currentQuantityInCart = existingItem ? existingItem.quantity : 0;
+            
+            if (currentQuantityInCart + 1 > productInfo.stock) {
+                showNotification(`❌ Недостаточно товара на складе! Доступно: ${productInfo.stock} ${productInfo.unit}`, '#ff4444');
+                return false;
+            }
+            
+            if (existingItem) {
+                existingItem.quantity += 1;
+            } else {
+                cart.push({ 
+                    id: item.id, 
+                    name: item.name, 
+                    price: item.price, 
+                    quantity: 1, 
+                    image: item.image || 'images/default-product.jpg',
+                    unit: productInfo.unit
+                });
+            }
+            
             localStorage.setItem(cartKey, JSON.stringify(cart));
             updateCartCounter();
-            showNotification('✅ Товар добавлен в корзину!', '#4CAF50');
+            showNotification(`✅ ${item.name} добавлен в корзину!`, '#4CAF50');
+            return true;
         }
 
         function removeFromWishlist(productId) {
             let wishlist = getWishlist();
+            const removedItem = wishlist.find(item => item.id === productId);
             wishlist = wishlist.filter(item => item.id !== productId);
             saveWishlist(wishlist);
             displayWishlistItems();
-            showNotification('🗑️ Товар удален из избранного', '#ff4444');
-        }
-
-        function clearWishlist() {
-            if (confirm('Вы уверены, что хотите очистить все избранное?')) { saveWishlist([]); displayWishlistItems(); showNotification('✨ Избранное очищено', '#ff4444'); }
-        }
-
-        function displayWishlistItems() {
-            const wishlistContainer = document.getElementById('wishlist-container');
-            const emptyWishlist = document.getElementById('empty-wishlist');
-            const wishlist = getWishlist();
-            wishlistContainer.innerHTML = '';
-            if (wishlist.length === 0) { emptyWishlist.style.display = 'block'; wishlistContainer.style.display = 'none'; }
-            else {
-                emptyWishlist.style.display = 'none';
-                wishlistContainer.style.display = 'flex';
-                wishlist.forEach(item => {
-                    const wishlistItem = document.createElement('div');
-                    wishlistItem.className = 'wishlist-item';
-                    wishlistItem.innerHTML = `<img src="${item.image || 'images/default-product.jpg'}" alt="${escapeHtml(item.name)}" class="wishlist-item-image" onerror="this.src='images/default-product.jpg'"><div class="wishlist-item-info"><div class="wishlist-item-name">${escapeHtml(item.name)}</div><div class="wishlist-item-price">${item.price.toLocaleString()} руб/шт.</div></div><div class="wishlist-item-actions"><button class="add-to-cart-btn" data-id="${item.id}"><i class="fas fa-cart-plus"></i> В корзину</button><button class="remove-btn" data-id="${item.id}"><i class="fas fa-times"></i> Удалить</button></div>`;
-                    wishlistContainer.appendChild(wishlistItem);
-                });
-                document.querySelectorAll('.add-to-cart-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); const product = wishlist.find(p => p.id === id); if (product) addToCart(product); }); });
-                document.querySelectorAll('.remove-btn').forEach(btn => { btn.addEventListener('click', (e) => { e.stopPropagation(); const id = btn.getAttribute('data-id'); removeFromWishlist(id); }); });
+            if (removedItem) {
+                showNotification(`🗑️ ${removedItem.name} удален из избранного`, '#ff4444');
             }
         }
 
-        function showNotification(message, color) {
-            const notification = document.createElement('div');
-            notification.style.cssText = `position: fixed; bottom: 20px; right: 20px; background: ${color}; color: white; padding: 12px 20px; border-radius: 10px; z-index: 1000; font-weight: bold; font-size: 14px; animation: slideInRight 0.3s ease; box-shadow: 0 4px 15px rgba(0,0,0,0.2);`;
-            notification.textContent = message;
-            document.body.appendChild(notification);
-            const style = document.createElement('style');
-            style.textContent = `@keyframes slideInRight { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }`;
-            document.head.appendChild(style);
-            setTimeout(() => { notification.remove(); style.remove(); }, 3000);
+        function clearWishlist() {
+            if (confirm('Вы уверены, что хотите очистить все избранное?')) {
+                saveWishlist([]);
+                displayWishlistItems();
+                showNotification('✨ Избранное очищено', '#ff4444');
+            }
         }
 
-        function escapeHtml(text) { if (!text) return ''; const div = document.createElement('div'); div.textContent = text; return div.innerHTML; }
+        async function displayWishlistItems() {
+            const wishlistContainer = document.getElementById('wishlist-container');
+            const emptyWishlist = document.getElementById('empty-wishlist');
+            const wishlist = getWishlist();
+            
+            wishlistContainer.innerHTML = '';
+            
+            if (wishlist.length === 0) {
+                emptyWishlist.style.display = 'block';
+                wishlistContainer.style.display = 'none';
+                return;
+            }
+            
+            emptyWishlist.style.display = 'none';
+            wishlistContainer.style.display = 'flex';
+            
+            for (const item of wishlist) {
+                const productInfo = await getProductInfo(item.id);
+                const stock = productInfo.stock;
+                const unit = productInfo.unit;
+                const currentPrice = productInfo.price || item.price;
+                
+                const stockText = stock <= 0 ? 'Нет в наличии' : (stock < 10 ? `Осталось: ${stock} ${unit}` : `В наличии: ${stock} ${unit}`);
+                const stockColor = stock <= 0 ? '#ff4444' : (stock < 10 ? '#ff9800' : '#4CAF50');
+                const isOutOfStock = stock <= 0;
+                
+                const wishlistItem = document.createElement('div');
+                wishlistItem.className = 'wishlist-item';
+                wishlistItem.innerHTML = `
+                    <img src="${item.image || 'images/default-product.jpg'}" alt="${escapeHtml(item.name)}" class="wishlist-item-image" onerror="this.src='images/default-product.jpg'">
+                    <div class="wishlist-item-info">
+                        <div class="wishlist-item-name">${escapeHtml(item.name)}</div>
+                        <div class="wishlist-item-stock"><span style="background: ${stockColor}; color: white; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; display: inline-block;">${stockText}</span></div>
+                        <div class="wishlist-item-price">${currentPrice.toLocaleString()} ₽ / ${escapeHtml(unit)}</div>
+                    </div>
+                    <div class="wishlist-item-actions">
+                        <button class="add-to-cart-btn" data-id="${item.id}" data-name="${escapeHtml(item.name)}" data-price="${currentPrice}" data-image="${item.image || 'images/default-product.jpg'}" data-unit="${unit}" ${isOutOfStock ? 'disabled' : ''}>${isOutOfStock ? '<i class="fas fa-times-circle"></i> Нет в наличии' : '<i class="fas fa-cart-plus"></i> В корзину'}</button>
+                        <button class="remove-btn" data-id="${item.id}"><i class="fas fa-times"></i> Удалить</button>
+                    </div>
+                `;
+                wishlistContainer.appendChild(wishlistItem);
+            }
+            
+            document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    if (btn.disabled) return;
+                    const id = btn.getAttribute('data-id');
+                    const name = btn.getAttribute('data-name');
+                    const price = parseInt(btn.getAttribute('data-price'));
+                    const image = btn.getAttribute('data-image');
+                    const unit = btn.getAttribute('data-unit');
+                    const product = { id, name, price, image, unit };
+                    await addToCartFromWishlist(product);
+                });
+            });
+            
+            document.querySelectorAll('.remove-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const id = btn.getAttribute('data-id');
+                    removeFromWishlist(id);
+                });
+            });
+        }
 
         function setupSearch() {
             const searchInput = document.getElementById('search-input');
             const searchButton = document.getElementById('search-button');
             if (searchButton && searchInput) {
-                searchButton.addEventListener('click', () => { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } });
-                searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { const query = searchInput.value.trim(); if (query) { sessionStorage.setItem('searchQuery', query); window.location.href = 'index.html'; } } });
+                searchButton.addEventListener('click', () => {
+                    const query = searchInput.value.trim();
+                    if (query) {
+                        sessionStorage.setItem('searchQuery', query);
+                        window.location.href = 'index.html';
+                    }
+                });
+                searchInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') {
+                        const query = searchInput.value.trim();
+                        if (query) {
+                            sessionStorage.setItem('searchQuery', query);
+                            window.location.href = 'index.html';
+                        }
+                    }
+                });
             }
         }
 
@@ -606,29 +767,9 @@
             setupSearch();
             updateAdminButtonVisibility();
             setTimeout(() => updateAdminButtonVisibility(), 100);
+            
             const clearBtn = document.getElementById('clear-wishlist-btn');
             if (clearBtn) clearBtn.addEventListener('click', clearWishlist);
-        });
-    </script>
-    <script>
-        function setupCategoryNavigation() {
-            document.querySelectorAll('.category-nav-link').forEach(link => {
-                link.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    const category = link.getAttribute('data-category');
-                    if (category) {
-                        sessionStorage.setItem('filterCategory', category);
-                        sessionStorage.removeItem('searchQuery');
-                        sessionStorage.removeItem('filterSubcategory');
-                        sessionStorage.removeItem('filterBrand');
-                        window.location.href = 'index.html';
-                    }
-                });
-            });
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            setupCategoryNavigation();
         });
     </script>
     <script>
