@@ -762,7 +762,10 @@
                 });
             });
 
-            document.getElementById('submit-order-btn').addEventListener('click', submitOrder);
+            const submitBtn = document.getElementById('submit-order-btn');
+            if (submitBtn) {
+                submitBtn.onclick = submitOrder;
+            }
         }
 
         function updateDeliveryCost() {
@@ -781,6 +784,8 @@
         }
 
         async function submitOrder() {
+            console.log('🔵 Начинаем оформление заказа...');
+            
             const cart = getCart();
             if (cart.length === 0) {
                 alert('Корзина пуста!');
@@ -796,110 +801,32 @@
 
             const submitBtn = document.getElementById('submit-order-btn');
             const originalText = submitBtn.innerHTML;
-            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка наличия товаров...';
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление...';
             submitBtn.disabled = true;
 
             try {
-                const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
-                const { getFirestore, doc, getDoc, updateDoc, collection, addDoc, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
-                
-                const firebaseConfig = {
-                    apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
-                    authDomain: "building-store-66294.firebaseapp.com",
-                    projectId: "building-store-66294",
-                    storageBucket: "building-store-66294.firebasestorage.app",
-                    messagingSenderId: "192694380898",
-                    appId: "1:192694380898:web:51837f94629555d310e43b"
-                };
-                
-                const app = initializeApp(firebaseConfig);
-                const db = getFirestore(app);
-                
-                let outOfStockItems = [];
-                let stockIssues = [];
-                
-                for (const item of cart) {
-                    const productRef = doc(db, "товары", item.id);
-                    const productSnap = await getDoc(productRef);
-                    
-                    if (!productSnap.exists()) {
-                        outOfStockItems.push(item.name);
-                        continue;
-                    }
-                    
-                    const productData = productSnap.data();
-                    const currentStock = productData.Количество !== undefined ? productData.Количество : 
-                                         (productData.stock !== undefined ? productData.stock : 0);
-                    const unit = productData.ЕдиницаИзмерения || productData.unit || 'шт';
-                    
-                    if (currentStock <= 0) {
-                        outOfStockItems.push(`${item.name} (${unit})`);
-                    } else if (currentStock < item.quantity) {
-                        stockIssues.push({
-                            name: item.name,
-                            available: currentStock,
-                            requested: item.quantity,
-                            unit: unit
-                        });
-                    }
-                }
-                
-                if (outOfStockItems.length > 0) {
-                    let message = '❌ Оформление заказа отменено!\n\nСледующие товары закончились:\n';
-                    outOfStockItems.forEach(item => { message += `• ${item}\n`; });
-                    message += '\nПожалуйста, удалите эти товары из корзины и повторите попытку.';
-                    alert(message);
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                if (stockIssues.length > 0) {
-                    let message = '⚠️ Оформление заказа отменено!\n\nКоличество следующих товаров ограничено:\n';
-                    stockIssues.forEach(issue => { 
-                        message += `• ${issue.name}: доступно ${issue.available} ${issue.unit}, вы заказали ${issue.requested} ${issue.unit}\n`;
-                    });
-                    message += '\nПожалуйста, уменьшите количество в корзине.';
-                    alert(message);
-                    submitBtn.innerHTML = originalText;
-                    submitBtn.disabled = false;
-                    return;
-                }
-                
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Оформление заказа...';
-                
-                const userId = currentUser.id;
                 const userData = getFullUserData();
+                const address = document.getElementById('address')?.value || 'Не указан';
+                const comment = document.getElementById('comment')?.value || '';
                 
-                if (!userData) {
-                    alert('Ошибка: данные пользователя не найдены. Пожалуйста, войдите снова.');
-                    window.location.href = 'auth.html';
-                    return;
-                }
-
-                const customerData = {
-                    name: userData.name,
-                    phone: userData.phone || 'Не указан',
-                    email: userData.email
-                };
-
                 const selectedDelivery = document.querySelector('.delivery-option.selected');
                 const deliveryMethod = selectedDelivery?.querySelector('.option-title')?.textContent || 'Самовывоз';
-                const deliveryPrice = selectedDelivery?.querySelector('.option-price')?.textContent || '0';
-                const deliveryCost = deliveryPrice.includes('450') ? 450 : 0;
-
-                const address = document.getElementById('address')?.value || '';
-                const comment = document.getElementById('comment')?.value || '';
+                
                 const selectedPayment = document.querySelector('.payment-option.selected');
                 const paymentMethod = selectedPayment?.querySelector('.payment-title')?.textContent || 'Оплата онлайн';
-                const totalWithDelivery = currentTotal + deliveryCost;
-
+                
+                const totalWithDelivery = currentTotal + currentDeliveryCost;
+                
                 const orderData = {
                     orderNumber: 'ORD-' + Date.now(),
                     date: new Date().toLocaleString('ru-RU'),
-                    userId: userId,
-                    customer: customerData,
-                    delivery: { method: deliveryMethod, address: address || 'Не указан', cost: deliveryCost },
+                    userId: currentUser.id,
+                    customer: {
+                        name: userData.name,
+                        phone: userData.phone || 'Не указан',
+                        email: userData.email
+                    },
+                    delivery: { method: deliveryMethod, address: address, cost: currentDeliveryCost },
                     payment: { method: paymentMethod, status: 'pending' },
                     items: cart.map(item => ({ 
                         id: item.id, 
@@ -907,56 +834,71 @@
                         price: item.price, 
                         quantity: item.quantity, 
                         total: item.price * item.quantity,
-                        category: item.category || 'Другое',
                         unit: item.unit || 'шт'
                     })),
                     subtotal: currentTotal,
-                    deliveryCost: deliveryCost,
+                    deliveryCost: currentDeliveryCost,
                     total: totalWithDelivery,
                     comment: comment,
                     status: 'новый'
                 };
-
-                for (const item of cart) {
-                    const productRef = doc(db, "товары", item.id);
-                    const productSnap = await getDoc(productRef);
-                    if (productSnap.exists()) {
-                        const productData = productSnap.data();
-                        const currentStock = productData.Количество !== undefined ? productData.Количество : 
-                                             (productData.stock !== undefined ? productData.stock : 0);
-                        const newStock = currentStock - item.quantity;
-                        
-                        await updateDoc(productRef, {
-                            Количество: newStock,
-                            stock: newStock
-                        });
-                        console.log(`✅ Обновлен остаток товара "${item.name}": ${currentStock} → ${newStock}`);
-                    }
-                }
                 
-                const ordersCollection = collection(db, "orders");
-                await addDoc(ordersCollection, {
-                    ...orderData,
-                    createdAt: Timestamp.fromDate(new Date()),
-                    updatedAt: Timestamp.fromDate(new Date())
-                });
+                console.log('📝 Сохраняем заказ:', orderData);
                 
-                const orders = JSON.parse(localStorage.getItem('orders')) || [];
+                // Сохраняем в localStorage
+                const orders = JSON.parse(localStorage.getItem('orders') || '[]');
                 orders.push(orderData);
                 localStorage.setItem('orders', JSON.stringify(orders));
                 
-                if (currentUser) {
-                    const users = getUsers();
-                    const userIndex = users.findIndex(u => u.id === currentUser.id);
-                    if (userIndex !== -1) {
-                        if (!users[userIndex].orders) users[userIndex].orders = [];
-                        users[userIndex].orders.push(orderData);
-                        localStorage.setItem('users', JSON.stringify(users));
+                // Сохраняем в Firebase если доступен
+                if (typeof window.firebaseInitialized === 'undefined') {
+                    try {
+                        const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
+                        const { getFirestore, addDoc, collection, Timestamp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js");
+                        
+                        const firebaseConfig = {
+                            apiKey: "AIzaSyCsZoVihjNlNnekag8KzK1B7_whmF4pkOo",
+                            authDomain: "building-store-66294.firebaseapp.com",
+                            projectId: "building-store-66294",
+                            storageBucket: "building-store-66294.firebasestorage.app",
+                            messagingSenderId: "192694380898",
+                            appId: "1:192694380898:web:51837f94629555d310e43b"
+                        };
+                        
+                        const app = initializeApp(firebaseConfig);
+                        const db = getFirestore(app);
+                        
+                        const ordersCollection = collection(db, "orders");
+                        await addDoc(ordersCollection, {
+                            ...orderData,
+                            createdAt: Timestamp.fromDate(new Date()),
+                            updatedAt: Timestamp.fromDate(new Date())
+                        });
+                        console.log('✅ Заказ сохранен в Firebase');
+                    } catch (err) {
+                        console.warn('⚠️ Firebase не доступен, заказ сохранен локально:', err);
                     }
                 }
                 
+                // Сохраняем в профиль пользователя
+                const users = getUsers();
+                const userIndex = users.findIndex(u => u.id === currentUser.id);
+                if (userIndex !== -1) {
+                    if (!users[userIndex].orders) users[userIndex].orders = [];
+                    users[userIndex].orders.push(orderData);
+                    localStorage.setItem('users', JSON.stringify(users));
+                }
+                
+                // Очищаем корзину
                 clearCart();
-
+                
+                // Обновляем счетчик корзины в шапке
+                const cartCounter = document.querySelector('.cart-counter');
+                if (cartCounter) {
+                    cartCounter.style.display = 'none';
+                }
+                
+                // Показываем успешное сообщение
                 const container = document.getElementById('checkout-container');
                 container.innerHTML = `
                     <div class="order-success">
@@ -964,16 +906,17 @@
                         <h2>Заказ оформлен!</h2>
                         <p>Номер заказа: <strong>${orderData.orderNumber}</strong></p>
                         <p>Сумма заказа: ${totalWithDelivery.toLocaleString()} ₽</p>
-                        <p>Детали отправлены на почту ${customerData.email}</p>
+                        <p>Детали заказа отправлены на почту ${userData.email}</p>
                         <a href="index.html" class="submit-order-btn" style="display:inline-block; text-decoration:none; margin-top:20px;">Вернуться на главную</a>
                         <a href="profile.html" class="submit-order-btn" style="display:inline-block; text-decoration:none; margin-top:20px; background:#fff;">Перейти в профиль</a>
                     </div>
                 `;
-                updateCartCounterInHeader();
+                
+                console.log('✅ Заказ успешно оформлен!');
                 
             } catch (error) {
-                console.error('Ошибка при оформлении заказа:', error);
-                alert('Произошла ошибка при оформлении заказа. Пожалуйста, попробуйте снова.');
+                console.error('❌ Ошибка при оформлении заказа:', error);
+                alert('Произошла ошибка: ' + error.message);
                 submitBtn.innerHTML = originalText;
                 submitBtn.disabled = false;
             }
@@ -1019,24 +962,6 @@
             }
         }
 
-        function checkAuthAndRender() {
-            const isLoggedIn = getCurrentUser() !== null;
-            
-            if (!isLoggedIn) {
-                showAccessDenied();
-            } else {
-                renderCheckout();
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuthAndRender();
-            updateUserStatusInHeader();
-            setupSearch();
-            updateAdminButtonVisibility();
-        });
-    </script>
-    <script>
         function setupCategoryNavigation() {
             document.querySelectorAll('.category-nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -1053,7 +978,21 @@
             });
         }
 
+        function checkAuthAndRender() {
+            const isLoggedIn = getCurrentUser() !== null;
+            
+            if (!isLoggedIn) {
+                showAccessDenied();
+            } else {
+                renderCheckout();
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
+            checkAuthAndRender();
+            updateUserStatusInHeader();
+            setupSearch();
+            updateAdminButtonVisibility();
             setupCategoryNavigation();
         });
     </script>

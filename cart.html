@@ -400,7 +400,6 @@
     </footer>
 
     <script>
-        // === ДАННЫЕ ГЛАВНОГО АДМИНИСТРАТОРА ===
         const MASTER_ADMIN = {
             id: 'admin_main',
             name: 'админ',
@@ -416,9 +415,7 @@
         function updateAdminButtonVisibility() {
             const adminButton = document.getElementById('admin-button-header');
             if (!adminButton) return;
-
             const currentUser = getCurrentUser();
-
             if (currentUser && currentUser.email === MASTER_ADMIN.email) {
                 adminButton.style.display = 'flex';
                 if (!currentUser.isAdmin) {
@@ -527,6 +524,17 @@
             }
         }
 
+        function goToCheckout() {
+            const cart = getCart();
+            if (cart.length === 0) {
+                alert('Корзина пуста! Добавьте товары перед оформлением заказа.');
+                return;
+            }
+            
+            console.log('🔄 Переход на страницу оформления заказа...');
+            window.location.href = 'checkout.html';
+        }
+
         async function updateCartDisplay() {
             const cart = getCart();
             const cartContent = document.getElementById('cart-content');
@@ -619,7 +627,9 @@
                             <span class="summary-label">Итого</span>
                             <span class="summary-value">${total.toLocaleString()} ₽</span>
                         </div>
-                        <button class="order-btn" id="checkout-btn" ${hasOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}><i class="fas fa-shopping-bag"></i> ${hasOutOfStock ? 'Есть проблемы с наличием' : 'Оформить заказ'}</button>
+                        <button class="order-btn" id="checkout-btn" ${hasOutOfStock ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+                            <i class="fas fa-shopping-bag"></i> ${hasOutOfStock ? 'Есть проблемы с наличием' : 'Оформить заказ'}
+                        </button>
                     </div>
                 </div>
             `;
@@ -633,6 +643,11 @@
                 btn.removeEventListener('click', handleRemoveClick);
                 btn.addEventListener('click', handleRemoveClick);
             });
+            
+            const checkoutBtn = document.getElementById('checkout-btn');
+            if (checkoutBtn && !hasOutOfStock) {
+                checkoutBtn.onclick = goToCheckout;
+            }
         }
 
         async function handleQuantityClick(e) {
@@ -677,46 +692,6 @@
             }
         }
 
-        async function goToCheckout() {
-            const cart = getCart();
-            if (cart.length === 0) {
-                alert('Корзина пуста! Добавьте товары перед оформлением заказа.');
-                return;
-            }
-            
-            const btn = document.getElementById('checkout-btn');
-            if (btn.disabled) {
-                alert('❌ Невозможно оформить заказ. Проверьте наличие товаров в корзине.');
-                return;
-            }
-            
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Проверка...';
-            btn.disabled = true;
-            
-            let hasIssues = false;
-            for (const item of cart) {
-                const stockInfo = await getProductStockInfo(item.id);
-                if (stockInfo.stock <= 0) {
-                    alert(`❌ Товар "${item.name}" закончился! Пожалуйста, удалите его из корзины.`);
-                    hasIssues = true;
-                    break;
-                }
-                if (item.quantity > stockInfo.stock) {
-                    alert(`⚠️ Количество товара "${item.name}" превышает доступное. Доступно: ${stockInfo.stock} ${stockInfo.unit}`);
-                    hasIssues = true;
-                    break;
-                }
-            }
-            
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            
-            if (!hasIssues) {
-                window.location.href = 'checkout.html';
-            }
-        }
-
         function updateCartCounter() {
             const cart = getCart();
             const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 1), 0);
@@ -750,15 +725,6 @@
             }
         }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            await updateCartDisplay();
-            updateUserStatusInHeader();
-            setupSearch();
-            updateAdminButtonVisibility();
-            setTimeout(() => updateAdminButtonVisibility(), 100);
-        });
-    </script>
-    <script>
         function setupCategoryNavigation() {
             document.querySelectorAll('.category-nav-link').forEach(link => {
                 link.addEventListener('click', (e) => {
@@ -775,8 +741,13 @@
             });
         }
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            await updateCartDisplay();
+            updateUserStatusInHeader();
+            setupSearch();
+            updateAdminButtonVisibility();
             setupCategoryNavigation();
+            setTimeout(() => updateAdminButtonVisibility(), 100);
         });
     </script>
 </body>
